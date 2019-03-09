@@ -16,6 +16,12 @@
 
                     You are logged in!
                 </div>
+
+                <div>
+                    <ul>
+                        <a href="{{ route('containers.index') }}"><li>containers</li></a>
+                    </ul>
+                </div> 
             </div>
         </div>
     </div>
