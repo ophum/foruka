@@ -21,9 +21,15 @@
 </head>
 <body>
     <div id="app">
-        <main>
+        <header>
+            @component('components.header')
+            @endcomponent
+        </header>
+        <main class="container">
             @yield('content')
         </main>
+        </div>
+    </div>
     </div>
 </body>
 </html>

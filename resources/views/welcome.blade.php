@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<h1>foruka</h1>
-<hr>
+
 	@if (Route::has('login'))
 		@auth
 			<a href="{{ url('/home') }}">Home</a>
