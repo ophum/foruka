@@ -1,4 +1,6 @@
+@extends('layouts.app')
 
+@section('content')
 <form action="{{ route('containers.store') }}" method="post">
 {{csrf_field()}}
     <label for="name">
@@ -15,3 +17,4 @@
     </select>
     <input type="submit" value="create">
 </form>
+@endsection

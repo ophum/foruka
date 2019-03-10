@@ -1,12 +1,6 @@
-<!doctype html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-	<title>foruka</title>
-</head>
-<body>
+@section('content')
 <h1>foruka</h1>
 <hr>
 	@if (Route::has('login'))
@@ -20,5 +14,4 @@
 			@endif
  		@endauth
 	@endif
-    </body>
-</html>
+@endsection
