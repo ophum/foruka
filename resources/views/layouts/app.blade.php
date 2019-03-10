@@ -25,7 +25,7 @@
             @component('components.header')
             @endcomponent
         </header>
-        <main class="container">
+        <main class="container mt-1">
             @yield('content')
         </main>
         </div>
