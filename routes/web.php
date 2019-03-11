@@ -19,3 +19,5 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('/containers', 'ContainerController');
+
+Route::get('/logout', 'Auth\LogoutController@logout')->name('logout');
