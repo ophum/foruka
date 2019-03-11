@@ -2,6 +2,8 @@
   <a class="navbar-brand" href="{{ route('home') }}">
     foruka
   </a>
+
+  @auth
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -17,6 +19,17 @@
             <a class="dropdown-item" href="{{ route('containers.create') }}">Launch</a>
             </div>
         </li>
+        <li class="nav-item"><a class="nav-link" href="{{ route('logout') }}">Logout</a></li>
     </ul>
   </div>
+
+  @endauth
+
+  @guest
+    
+    <ul class="navbar-nav">
+      <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">Login</a></li>
+      <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">Register</a></li>
+    </ul>
+  @endguest
 </nav>
