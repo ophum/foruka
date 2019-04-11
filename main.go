@@ -28,5 +28,7 @@ func main() {
   r.POST("/login", auth.Login)
 
   r.GET("/verified", auth.Verified)
+
+  r.GET("/logout", auth.Logout)
   r.Run()
 }

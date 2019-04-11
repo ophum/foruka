@@ -5,6 +5,7 @@ import (
   "github.com/gin-gonic/contrib/sessions"
   "github.com/ophum/foruka/models/authModel"
 )
+
 func Verified(c *gin.Context) {
   session := sessions.Default(c)
   id := session.Get("id")
@@ -47,4 +48,12 @@ func Register(c *gin.Context) {
   authModel.Create(id, pass)
 
   c.Redirect(301, "/login")
+}
+
+func Logout(c *gin.Context) {
+  session := sessions.Default(c)
+  session.Clear()
+  session.Save()
+  
+  c.Redirect(301, "/")
 }
