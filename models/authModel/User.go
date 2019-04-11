@@ -22,19 +22,21 @@ func Verify(id string, pass string) bool {
   var user User
   db.Where("name = ?", id).First(&user);
 
-  if user.Hash == pass {
-    return true;
-  }else {
-    return false;
-  }
+  return CompareHash(user.Hash, pass)
 }
 
-func Create(id string, pass string) {
+func Create(id string, pass string) error {
   db, err := gorm.Open("sqlite3", "database/database.sqlite")
   if err != nil {
     panic("failed to connect database\n")
   }
   defer db.Close()
-  db.Create(&User{Name: id, Hash: pass})
+
+  hash, err := CreateHash(pass)
+  if err != nil {
+    return err
+  }
+  db.Create(&User{Name: id, Hash: hash})
+  return nil
 }
 
