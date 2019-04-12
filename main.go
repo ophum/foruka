@@ -5,6 +5,7 @@ import(
   "github.com/gin-gonic/contrib/sessions"
   _ "net/http"
 
+  home "github.com/ophum/foruka/controllers/homeController"
   auth "github.com/ophum/foruka/controllers/authController"
 )
 
@@ -16,10 +17,7 @@ func main() {
 
   r.LoadHTMLGlob("views/templates/*")
 
-  r.GET("/", func(c *gin.Context) {
-    c.HTML(200, "index.tmpl", gin.H{
-    })
-  })
+  r.GET("/", home.Index)
 
   r.GET("/register", auth.Create)
   r.POST("/register", auth.Register)
