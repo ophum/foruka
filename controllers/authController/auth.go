@@ -28,7 +28,11 @@ func Verified(c *gin.Context) {
 	}
 }
 func Index(c *gin.Context) {
-	c.HTML(200, "login.tmpl", gin.H{})
+	if IsAuth(c) {
+		c.Redirect(301, "/")
+	} else {
+		c.HTML(200, "login.tmpl", gin.H{})
+	}
 }
 
 func Login(c *gin.Context) {
@@ -41,7 +45,7 @@ func Login(c *gin.Context) {
 		session := sessions.Default(c)
 		session.Set("id", id)
 		session.Save()
-		c.Redirect(301, "/verified")
+		c.Redirect(301, "/")
 	} else {
 		c.Redirect(301, "/login")
 	}
@@ -57,7 +61,10 @@ func Register(c *gin.Context) {
 
 	authModel.Create(id, pass)
 
-	c.Redirect(301, "/login")
+	session := sessions.Default(c)
+	session.Set("id", id)
+	session.Save()
+	c.Redirect(301, "/")
 }
 
 func Logout(c *gin.Context) {
