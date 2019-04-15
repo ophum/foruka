@@ -15,6 +15,14 @@ func IsAuth(c *gin.Context) bool {
 	return false
 }
 
+func Auth(c *gin.Context) {
+  session := sessions.Default(c)
+  id := session.Get("id")
+  if id == nil {
+    c.Redirect(301, "/login")
+  }
+}
+
 func Verified(c *gin.Context) {
 
 	if IsAuth(c) {
