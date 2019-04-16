@@ -10,6 +10,6 @@ func Index(c *gin.Context) {
 	if auth.IsAuth(c) {
 		c.HTML(200, "verified.tmpl", gin.H{})
 	} else {
-		c.HTML(200, "index.tmpl", gin.H{"Title": "foruka"})
+		c.HTML(200, "home/index.tmpl", gin.H{"Title": "foruka"})
 	}
 }
