@@ -14,6 +14,8 @@ func main() {
 	r := gin.Default()
 
 	store := sessions.NewCookieStore([]byte("secret"))
+	store.Options(sessions.Options{MaxAge: 86400})
+
 	r.Use(sessions.Sessions("session", store))
 
 	r.LoadHTMLGlob("views/templates/*/**")
