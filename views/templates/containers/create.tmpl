@@ -1,0 +1,12 @@
+{{ define "containers/create.tmpl" }}
+
+<form action="/containers/store" method="POST"> 
+<p>Container Name : <input type="text" id="name" name="name"></p>
+<p>Image : <select name="image">
+<option>ubuntu</option>
+</select>
+</p>
+<p><input type="submit" value="create"></p>
+</form>
+{{ end }}
+
