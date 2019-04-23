@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	auth "github.com/ophum/foruka/controllers/authController"
+	cont "github.com/ophum/foruka/controllers/containerController"
 	home "github.com/ophum/foruka/controllers/homeController"
 )
 
@@ -32,8 +33,10 @@ func main() {
 
 	r.GET("/logout", auth.Logout)
 
-	r.GET("/containers/", func(c *gin.Context) {
-		c.HTML(200, "containers/index.tmpl", gin.H{})
-	})
+	containers := r.Group("/containers")
+	containers.GET("/", cont.Index)
+	containers.GET("/create", cont.Create)
+	containers.GET("/store", cont.Create)
+	containers.POST("/store", cont.Store)
 	r.Run()
 }
