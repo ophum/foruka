@@ -4,7 +4,8 @@ import (
   "github.com/jinzhu/gorm"
   _ "github.com/mattn/go-sqlite3"
 
-  . "github.com/ophum/foruka/models/authModel"
+  auth "github.com/ophum/foruka/models/authModel"
+	cont "github.com/ophum/foruka/models/containerModel"
 )
 
 func main() {
@@ -14,6 +15,6 @@ func main() {
   }
   defer db.Close()
   
-  db.CreateTable(&User{})
+  db.AutoMigrate(&auth.User{}, &cont.Container{})
 }
 
