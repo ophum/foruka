@@ -8,7 +8,7 @@ import (
 
 func Index(c *gin.Context) {
 	if auth.IsAuth(c) {
-		c.HTML(200, "verified.tmpl", gin.H{})
+		auth.Verified(c)
 	} else {
 		c.HTML(200, "home/index.tmpl", gin.H{"Title": "foruka"})
 	}
