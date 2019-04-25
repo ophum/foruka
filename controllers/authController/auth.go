@@ -1,35 +1,37 @@
 package authController
 
 import (
-	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/ophum/foruka/models/authModel"
 )
 
 func IsAuth(c *gin.Context) bool {
 	session := sessions.Default(c)
-	id := session.Get("id")
-	if id != nil {
+	user_id := session.Get("user_id")
+	if user_id != nil {
 		return true
 	}
 	return false
 }
 
 func Auth(c *gin.Context) {
-  session := sessions.Default(c)
-  id := session.Get("id")
-  if id == nil {
-    c.Redirect(301, "/login")
-  }
+	session := sessions.Default(c)
+	user_id := session.Get("user_id")
+	if user_id == nil {
+		c.Redirect(301, "/login")
+	}
 }
 
 func Verified(c *gin.Context) {
 
 	if IsAuth(c) {
 		session := sessions.Default(c)
-		id := session.Get("id")
+		user_id := session.Get("user_id").(uint)
+		user := authModel.GetUser(user_id)
+
 		c.HTML(200, "verified.tmpl", gin.H{
-			"Id": id,
+			"Name": user.Name,
 		})
 	} else {
 		c.Redirect(301, "/login")
@@ -50,8 +52,12 @@ func Login(c *gin.Context) {
 	v := authModel.Verify(id, pass)
 
 	if v {
+		user := authModel.GetUserWhereName(id)
 		session := sessions.Default(c)
-		session.Set("id", id)
+
+		session.Clear()
+		session.Save()
+		session.Set("user_id", user.ID)
 		session.Save()
 		c.Redirect(301, "/")
 	} else {
@@ -69,8 +75,9 @@ func Register(c *gin.Context) {
 
 	authModel.Create(id, pass)
 
+	user := authModel.GetUserWhereName(id)
 	session := sessions.Default(c)
-	session.Set("id", id)
+	session.Set("user_id", user.ID)
 	session.Save()
 	c.Redirect(301, "/")
 }
