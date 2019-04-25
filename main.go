@@ -3,7 +3,8 @@ package main
 import (
 	_ "net/http"
 
-	"github.com/gin-gonic/contrib/sessions"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
 	auth "github.com/ophum/foruka/controllers/authController"
@@ -14,7 +15,7 @@ import (
 func main() {
 	r := gin.Default()
 
-	store := sessions.NewCookieStore([]byte("secret"))
+	store := cookie.NewStore([]byte("secret"))
 	store.Options(sessions.Options{MaxAge: 86400})
 
 	r.Use(sessions.Sessions("session", store))
