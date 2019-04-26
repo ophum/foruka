@@ -1,5 +1,15 @@
 {{ define "containers/index.tmpl" }}
-container : {{ .C }}
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>foruka</title>
+    @import url("/assets/css/css.css")
+</head>
+<body>
+container : {{ .C }}<br>
 
+<a href="/logout">logout</a><br>
 <a href="/containers/create">create container</a>
+</body>
+</html>
 {{ end }}

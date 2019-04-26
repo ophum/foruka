@@ -21,6 +21,7 @@ func main() {
 	r.Use(sessions.Sessions("session", store))
 
 	r.LoadHTMLGlob("views/templates/*/**")
+	r.Static("/assets", "./assets")
 
 	r.GET("/", home.Index)
 

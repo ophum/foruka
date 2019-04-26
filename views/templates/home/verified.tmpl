@@ -1,8 +1,12 @@
+{{ define "home/verified.tmpl" }}
 <html>
 <head>
   <title>The first app on Gin WAF</title>
 </head>
 <body>
-Hello {{ .Name }}
+Hello {{ .Name }}<br>
+<a href="/logout">logout</a><br>
+<a href="/containers">containers</a>
 </body>
 </html>
+{{ end }}
