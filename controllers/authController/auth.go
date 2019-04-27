@@ -30,7 +30,7 @@ func Verified(c *gin.Context) {
 		user_id := session.Get("user_id").(uint)
 		user := authModel.GetUser(user_id)
 
-		c.HTML(200, "verified.tmpl", gin.H{
+		c.HTML(200, "home/verified.tmpl", gin.H{
 			"Name": user.Name,
 		})
 	} else {
@@ -41,7 +41,7 @@ func Index(c *gin.Context) {
 	if IsAuth(c) {
 		c.Redirect(301, "/")
 	} else {
-		c.HTML(200, "login.tmpl", gin.H{})
+		c.HTML(200, "home/login.tmpl", gin.H{})
 	}
 }
 

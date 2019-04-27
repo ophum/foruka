@@ -1,8 +1,33 @@
+{{ define "home/verified.tmpl" }}
 <html>
 <head>
-  <title>The first app on Gin WAF</title>
+    <meta charset="utf-8">
+    <title>foruka</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css" type="text/css">
 </head>
 <body>
-Hello {{ .Name }}
+  <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <div class="navbar-item">foruka</div>
+    </div>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="field is-grouped">
+          <p class="control">
+            <a class="button" href="/logout">
+              <span>
+                logout
+              </span>
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <a href="/containers">containers</a>
+  </div>
 </body>
 </html>
+{{ end }}
