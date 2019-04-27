@@ -3,13 +3,39 @@
 <head>
     <meta charset="utf-8">
     <title>foruka</title>
-    @import url("/assets/css/css.css")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.4/css/bulma.min.css" type="text/css">
 </head>
 <body>
-container : {{ .C }}<br>
+  <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <div class="navbar-item">foruka</div>
+    </div>
+    <div class="navbar-end">
+      <div class="navbar-item">
+        <div class="field is-grouped">
+          <p class="control">
+            <a class="button" href="/containers/create">
+              <span>
+                create
+              </span>
+            </a>
+          </p>
+          <p class="control">
+            <a class="button" href="/logout">
+              <span>
+                logout
+              </span>
+            </a>
+          </p>
 
-<a href="/logout">logout</a><br>
-<a href="/containers/create">create container</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    
+  </div>
 </body>
 </html>
 {{ end }}
