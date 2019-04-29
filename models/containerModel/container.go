@@ -12,6 +12,18 @@ type Container struct {
 	Image   string
 }
 
+func GetContainers(user_id int) []Container {
+	db, err := gorm.Open("sqlite3", "database/database.sqlite")
+	if err != nil {
+		panic("failed to connect database\n")
+	}
+	defer db.Close()
+	
+	containers := []Container{}
+	db.Find(&containers, "user_id = ?", user_id)
+	return containers
+}
+
 func Create(id int, name string, image string) error {
 	db, err := gorm.Open("sqlite3", "database/database.sqlite")
 	if err != nil {
