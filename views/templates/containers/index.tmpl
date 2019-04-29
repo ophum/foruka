@@ -34,7 +34,14 @@
   </nav>
 
   <div class="container">
-    
+		<table class="table is-hoverable">
+		<thead>
+		<tr><th>Name</th></tr>
+		</thead>
+ 		{{range .containers}}
+		<tr><td>{{.Name}}</td></tr>
+		{{end}}		   
+		</table>
   </div>
 </body>
 </html>
