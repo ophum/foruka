@@ -9,7 +9,10 @@ import (
 func Index(c *gin.Context) {
 	auth.Auth(c)
 
-	c.HTML(200, "containers/index.tmpl", gin.H{"Title": "foruka", "C": "hoge"})
+	containers := contmodel.GetContainers(1)
+	c.HTML(200, "containers/index.tmpl", gin.H{
+		"containers": containers,
+		})
 }
 
 func Create(c *gin.Context) {
