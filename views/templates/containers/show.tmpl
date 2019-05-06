@@ -1,4 +1,5 @@
-{{ define "containers/index.tmpl" }}
+{{ define "containers/show.tmpl" }}
+
 <html>
 <head>
     <meta charset="utf-8">
@@ -14,13 +15,6 @@
       <div class="navbar-item">
         <div class="field is-grouped">
           <p class="control">
-            <a class="button" href="/containers/create">
-              <span>
-                create
-              </span>
-            </a>
-          </p>
-          <p class="control">
             <a class="button" href="/logout">
               <span>
                 logout
@@ -34,15 +28,18 @@
   </nav>
 
   <div class="container">
-		<table class="table is-hoverable">
-		<thead>
-		<tr><th>Name</th></tr>
-		</thead>
- 		{{range .containers}}
-		<tr><td><a href="/containers/show/{{.ID}}">{{.Name}}</a></td></tr>
-		{{end}}		   
-		</table>
+    <div class="tile">
+      <form action="/containers/store" method="POST"> 
+        <div class="field">
+          <label class="label">Container Name</label>
+          <div class="control">
+            <input class="input" type="text" id="name" name="name" value="{{.container.Name}}">
+          </div>
+        </div>
+      </form>
+    </div>
   </div>
 </body>
 </html>
 {{ end }}
+
