@@ -1,8 +1,6 @@
 package containerController
 
 import (
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 	auth "github.com/ophum/foruka/controllers/authController"
 	contmodel "github.com/ophum/foruka/models/containerModel"
@@ -37,10 +35,10 @@ func Store(c *gin.Context) {
 func Show(c *gin.Context) {
 	auth.Auth(c)
 	userId := 1
-	contId, _ := strconv.Atoi(c.Param("id"))
+	hashId := c.Param("id")
 
 	var cont contmodel.Container
-	cont = contmodel.GetContainer(userId, contId)
+	cont = contmodel.GetContainer(userId, hashId)
 
 	c.HTML(200, "containers/show.tmpl", gin.H{
 		"container": cont,

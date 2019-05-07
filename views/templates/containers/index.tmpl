@@ -36,10 +36,10 @@
   <div class="container">
 		<table class="table is-hoverable">
 		<thead>
-		<tr><th>Name</th></tr>
+		<tr><th>ID</th><th>Name</th></tr>
 		</thead>
  		{{range .containers}}
-		<tr><td><a href="/containers/show/{{.ID}}">{{.Name}}</a></td></tr>
+		<tr><td><a href="/containers/show/{{.Hash_id}}">{{.Hash_id}}<a></td><td>{{.Name}}</td></tr>
 		{{end}}		   
 		</table>
   </div>
