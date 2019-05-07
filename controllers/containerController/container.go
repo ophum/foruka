@@ -14,7 +14,7 @@ func Index(c *gin.Context) {
 	containers := contmodel.GetContainers(1)
 	c.HTML(200, "containers/index.tmpl", gin.H{
 		"containers": containers,
-		})
+	})
 }
 
 func Create(c *gin.Context) {
@@ -25,7 +25,8 @@ func Create(c *gin.Context) {
 
 func Store(c *gin.Context) {
 	auth.Auth(c)
-	userId := 1
+	var userId uint
+	userId = 1
 	name := c.PostForm("name")
 	image := c.PostForm("image")
 
