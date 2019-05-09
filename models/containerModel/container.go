@@ -56,7 +56,11 @@ func Create(id uint, name string, image string) error {
 	e := fmt.Sprintf("%x", h.Sum(nil))
 	fmt.Println("hash src => " + user.Name + name)
 	fmt.Println("gen hash => " + e)
+	_, err = CreateContainer(user.Name+"-"+name, "ubuntu:18.04")
+	if err != nil {
+		fmt.Println(err)
+	}
+	db.Create(&Container{User_id: id, Hash_id: e, Name: user.Name + "-" + name, Image: image})
 
-	db.Create(&Container{User_id: id, Hash_id: e, Name: name, Image: image})
 	return nil
 }
