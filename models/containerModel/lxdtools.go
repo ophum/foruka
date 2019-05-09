@@ -51,3 +51,21 @@ func CreateContainer(name string, alias string) (string, error) {
 	}
 	return "success", nil
 }
+
+func LaunchContainer(name string) error {
+	req := api.ContainerStatePut{
+		Action:  "start",
+		Timeout: -1,
+	}
+
+	op, err := cont.UpdateContainerState(name, req, "")
+	if err != nil {
+		return err
+	}
+
+	err = op.Wait()
+	if err != nil {
+		return err
+	}
+	return nil
+}
