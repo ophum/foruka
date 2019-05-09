@@ -60,6 +60,10 @@ func Create(id uint, name string, image string) error {
 	if err != nil {
 		fmt.Println(err)
 	}
+	err = LaunchContainer(user.Name + "-" + name)
+	if err != nil {
+		fmt.Println(err)
+	}
 	db.Create(&Container{User_id: id, Hash_id: e, Name: user.Name + "-" + name, Image: image})
 
 	return nil
