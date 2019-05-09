@@ -39,8 +39,9 @@ func Show(c *gin.Context) {
 
 	var cont contmodel.Container
 	cont = contmodel.GetContainer(userId, hashId)
-
+	status, _ := contmodel.Status(cont.Name)
 	c.HTML(200, "containers/show.tmpl", gin.H{
 		"container": cont,
+		"status":    status,
 	})
 }
