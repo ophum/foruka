@@ -39,7 +39,8 @@
       </form>
       {{ .status }}
 
-      <a class="button is-link" href="/containers/stop/{{.container.Hash_id}}">stop</a>
+      <a class="button is-link" href="/containers/start/{{.container.Hash_id}}">start</a>
+      <a class="button is-danger" href="/containers/stop/{{.container.Hash_id}}">stop</a>
     </div>
   </div>
 </body>

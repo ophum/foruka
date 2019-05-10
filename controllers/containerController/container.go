@@ -48,6 +48,19 @@ func Show(c *gin.Context) {
 	})
 }
 
+func Start(c *gin.Context) {
+	auth.Auth(c)
+	userId := 1
+	hashId := c.Param("id")
+
+	cont := contmodel.GetContainer(userId, hashId)
+	err := contmodel.LaunchContainer(cont.Name)
+	if err != nil {
+		fmt.Println("err: ", err)
+	}
+	c.Redirect(301, "/containers/show/"+hashId)
+}
+
 func Stop(c *gin.Context) {
 	auth.Auth(c)
 	userId := 1
