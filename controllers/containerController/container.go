@@ -1,7 +1,7 @@
 package containerController
 
 import (
-	"strconv"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	auth "github.com/ophum/foruka/controllers/authController"
@@ -14,7 +14,7 @@ func Index(c *gin.Context) {
 	containers := contmodel.GetContainers(1)
 	c.HTML(200, "containers/index.tmpl", gin.H{
 		"containers": containers,
-		})
+	})
 }
 
 func Create(c *gin.Context) {
@@ -25,7 +25,8 @@ func Create(c *gin.Context) {
 
 func Store(c *gin.Context) {
 	auth.Auth(c)
-	userId := 1
+	var userId uint
+	userId = 1
 	name := c.PostForm("name")
 	image := c.PostForm("image")
 
@@ -36,12 +37,54 @@ func Store(c *gin.Context) {
 func Show(c *gin.Context) {
 	auth.Auth(c)
 	userId := 1
-	contId, _ := strconv.Atoi(c.Param("id"))
+	hashId := c.Param("id")
 
 	var cont contmodel.Container
-	cont = contmodel.GetContainer(userId, contId)
-
+	cont = contmodel.GetContainer(userId, hashId)
+	status, _ := contmodel.Status(cont.Name)
 	c.HTML(200, "containers/show.tmpl", gin.H{
 		"container": cont,
+		"status":    status,
 	})
+}
+
+func Start(c *gin.Context) {
+	auth.Auth(c)
+	userId := 1
+	hashId := c.Param("id")
+
+	cont := contmodel.GetContainer(userId, hashId)
+	err := contmodel.LaunchContainer(cont.Name)
+	if err != nil {
+		fmt.Println("err: ", err)
+	}
+	c.Redirect(301, "/containers/show/"+hashId)
+}
+
+func Stop(c *gin.Context) {
+	auth.Auth(c)
+	userId := 1
+	hashId := c.Param("id")
+
+	cont := contmodel.GetContainer(userId, hashId)
+	err := contmodel.StopContainer(cont.Name)
+	if err != nil {
+		fmt.Println("err: ", err)
+	}
+	c.Redirect(301, "/containers/show/"+hashId)
+}
+
+func Delete(c *gin.Context) {
+	auth.Auth(c)
+	userId := 1
+	hashId := c.Param("id")
+
+	cont := contmodel.GetContainer(userId, hashId)
+	err := contmodel.DeleteContainer(cont.Name)
+	if err != nil {
+		fmt.Println("err: ", err)
+	}
+
+	contmodel.Delete(hashId)
+	c.Redirect(301, "/containers/")
 }
