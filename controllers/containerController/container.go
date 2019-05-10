@@ -73,3 +73,18 @@ func Stop(c *gin.Context) {
 	}
 	c.Redirect(301, "/containers/show/"+hashId)
 }
+
+func Delete(c *gin.Context) {
+	auth.Auth(c)
+	userId := 1
+	hashId := c.Param("id")
+
+	cont := contmodel.GetContainer(userId, hashId)
+	err := contmodel.DeleteContainer(cont.Name)
+	if err != nil {
+		fmt.Println("err: ", err)
+	}
+
+	contmodel.Delete(hashId)
+	c.Redirect(301, "/containers/")
+}

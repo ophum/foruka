@@ -68,3 +68,14 @@ func Create(id uint, name string, image string) error {
 
 	return nil
 }
+
+func Delete(hash_id string) error {
+	db, err := gorm.Open("sqlite3", "database/database.sqlite")
+	if err != nil {
+		panic("failed to connect database\n")
+	}
+	defer db.Close()
+
+	db.Where("hash_id = ?", hash_id).Delete(Container{})
+	return nil
+}

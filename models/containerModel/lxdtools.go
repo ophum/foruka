@@ -88,3 +88,24 @@ func StopContainer(name string) error {
 
 	return nil
 }
+
+func DeleteContainer(name string) error {
+
+	status, _ := Status(name)
+
+	if status.Status == "Running" {
+		fmt.Println("is runnning")
+		StopContainer(name)
+	}
+	op, err := cont.DeleteContainer(name)
+	if err != nil {
+		return err
+	}
+
+	err = op.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
