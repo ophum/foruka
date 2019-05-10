@@ -9,9 +9,9 @@ import (
 )
 
 func Index(c *gin.Context) {
-	auth.Auth(c)
+	user := auth.Auth(c)
 
-	containers := contmodel.GetContainers(1)
+	containers := contmodel.GetContainers(user.ID)
 	c.HTML(200, "containers/index.tmpl", gin.H{
 		"containers": containers,
 	})
@@ -24,23 +24,20 @@ func Create(c *gin.Context) {
 }
 
 func Store(c *gin.Context) {
-	auth.Auth(c)
-	var userId uint
-	userId = 1
+	user := auth.Auth(c)
 	name := c.PostForm("name")
 	image := c.PostForm("image")
 
-	contmodel.Create(userId, name, image)
+	contmodel.Create(user.ID, name, image)
 	c.Redirect(301, "/containers/")
 }
 
 func Show(c *gin.Context) {
-	auth.Auth(c)
-	userId := 1
+	user := auth.Auth(c)
 	hashId := c.Param("id")
 
 	var cont contmodel.Container
-	cont = contmodel.GetContainer(userId, hashId)
+	cont = contmodel.GetContainer(user.ID, hashId)
 	status, _ := contmodel.Status(cont.Name)
 	c.HTML(200, "containers/show.tmpl", gin.H{
 		"container": cont,
@@ -49,11 +46,11 @@ func Show(c *gin.Context) {
 }
 
 func Start(c *gin.Context) {
-	auth.Auth(c)
-	userId := 1
+	user := auth.Auth(c)
+
 	hashId := c.Param("id")
 
-	cont := contmodel.GetContainer(userId, hashId)
+	cont := contmodel.GetContainer(user.ID, hashId)
 	err := contmodel.LaunchContainer(cont.Name)
 	if err != nil {
 		fmt.Println("err: ", err)
@@ -62,11 +59,10 @@ func Start(c *gin.Context) {
 }
 
 func Stop(c *gin.Context) {
-	auth.Auth(c)
-	userId := 1
+	user := auth.Auth(c)
 	hashId := c.Param("id")
 
-	cont := contmodel.GetContainer(userId, hashId)
+	cont := contmodel.GetContainer(user.ID, hashId)
 	err := contmodel.StopContainer(cont.Name)
 	if err != nil {
 		fmt.Println("err: ", err)
@@ -75,11 +71,10 @@ func Stop(c *gin.Context) {
 }
 
 func Delete(c *gin.Context) {
-	auth.Auth(c)
-	userId := 1
+	user := auth.Auth(c)
 	hashId := c.Param("id")
 
-	cont := contmodel.GetContainer(userId, hashId)
+	cont := contmodel.GetContainer(user.ID, hashId)
 	err := contmodel.DeleteContainer(cont.Name)
 	if err != nil {
 		fmt.Println("err: ", err)
