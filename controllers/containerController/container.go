@@ -1,6 +1,8 @@
 package containerController
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	auth "github.com/ophum/foruka/controllers/authController"
 	contmodel "github.com/ophum/foruka/models/containerModel"
@@ -44,4 +46,17 @@ func Show(c *gin.Context) {
 		"container": cont,
 		"status":    status,
 	})
+}
+
+func Stop(c *gin.Context) {
+	auth.Auth(c)
+	userId := 1
+	hashId := c.Param("id")
+
+	cont := contmodel.GetContainer(userId, hashId)
+	err := contmodel.StopContainer(cont.Name)
+	if err != nil {
+		fmt.Println("err: ", err)
+	}
+	c.Redirect(301, "/containers/show/"+hashId)
 }

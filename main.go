@@ -41,6 +41,7 @@ func main() {
 	containers.GET("/store", cont.Create)
 	containers.POST("/store", cont.Store)
 	containers.GET("/show/:id", cont.Show)
-	
+	containers.GET("/stop/:id", cont.Stop)
+
 	r.Run()
 }

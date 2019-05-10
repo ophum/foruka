@@ -69,3 +69,22 @@ func LaunchContainer(name string) error {
 	}
 	return nil
 }
+
+func StopContainer(name string) error {
+	req := api.ContainerStatePut{
+		Action:  "stop",
+		Timeout: -1,
+	}
+
+	op, err := cont.UpdateContainerState(name, req, "")
+	if err != nil {
+		return err
+	}
+
+	err = op.Wait()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
