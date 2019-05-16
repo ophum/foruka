@@ -33,16 +33,33 @@
 		</div>
 	</nav>
 
-  <div class="container">
-		<table class="table is-hoverable">
-		<thead>
-		<tr><th>ID</th><th>Name</th></tr>
-		</thead>
- 		{{range .containers}}
-		<tr><td><a href="/containers/show/{{.Hash_id}}">{{.Hash_id}}<a></td><td>{{.Name}}</td></tr>
-		{{end}}		   
-		</table>
-  </div>
+	<main class="columns">
+		<div class="submenu column is-3">
+			<aside class="box menu">
+				<ul class="menu-list">
+					<li><a class="button" href="/containers">containers</a></li>
+					<li><a class="button" href="/networks">networks</a></li>
+				</ul>
+			</aside>
+		</div>
+
+		<div class="column">
+			<article class="box media">
+				<div class="media-content">
+					<div class="content">
+						<table class="table is-hoverable">
+						<thead>
+						<tr><th>ID</th><th>Name</th></tr>
+						</thead>
+						{{range .containers}}
+						<tr><td><a href="/containers/show/{{.Hash_id}}">{{.Hash_id}}<a></td><td>{{.Name}}</td></tr>
+						{{end}}		   
+						</table>
+					</div>
+				</div>
+			</article>
+		</div>
+	</main>
 </body>
 </html>
 {{ end }}

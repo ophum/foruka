@@ -44,6 +44,8 @@ func Show(c *gin.Context) {
 	if status.Status == "Running" {
 		addresses = status.Network["eth0"].Addresses
 	}
+
+	c.Writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.HTML(200, "containers/show.tmpl", gin.H{
 		"container": cont,
 		"status":    status,
@@ -61,6 +63,8 @@ func Start(c *gin.Context) {
 	if err != nil {
 		fmt.Println("err: ", err)
 	}
+
+	c.Writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.Redirect(301, "/containers/show/"+hashId)
 }
 
@@ -73,6 +77,8 @@ func Stop(c *gin.Context) {
 	if err != nil {
 		fmt.Println("err: ", err)
 	}
+
+	c.Writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.Redirect(301, "/containers/show/"+hashId)
 }
 
@@ -87,5 +93,7 @@ func Delete(c *gin.Context) {
 	}
 
 	contmodel.Delete(hashId)
+
+	c.Writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.Redirect(301, "/containers/")
 }
