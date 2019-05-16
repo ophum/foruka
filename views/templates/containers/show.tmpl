@@ -27,23 +27,48 @@
     </div>
   </nav>
 
-  <div class="container">
-    <div class="tile">
-      <form action="/containers/store" method="POST"> 
-        <div class="field">
-          <label class="label">Container Name</label>
-          <div class="control">
-            <input class="input" type="text" id="name" name="name" value="{{.container.Name}}">
-          </div>
-        </div>
-      </form>
-      {{ .status }}
+  <main class="columns">
+		<div class="submenu column is-3">
+			<aside class="box menu">
+				<ul class="menu-list">
+					<li><a class="button" href="/containers">containers</a></li>
+					<li><a class="button" href="/networks">networks</a></li>
+				</ul>
+			</aside>
+		</div>
 
-      <a class="button is-link" href="/containers/start/{{.container.Hash_id}}">start</a>
-      <a class="button is-warning" href="/containers/stop/{{.container.Hash_id}}">stop</a>
-      <a class="button is-danger" href="/containers/delete/{{.container.Hash_id}}">delete</a>
-    </div>
-  </div>
+		<div class="column">
+			<article class="box media">
+				<div class="media-content">
+					<div class="content">
+            <div class="tile">
+
+              <table class="table">
+              <tr><td>Name</td><td>{{ .container.Name }}</td></tr>
+              <tr><td>Hash</td><td>{{ .container.Hash_id }}</td></tr>
+              <tr><td>Status</td><td>{{ .status.Status }}</td></tr>
+              {{ range .addresses }}
+              <tr><td>{{ .Family}}</td><td>{{ .Address }}/{{ .Netmask }}</td></tr>
+              {{ end }}
+              </table>
+
+              <form action="/containers/start/{{ .container.Hash_id }}" method="GET">
+                <input type="hidden" name="_token" value="test">
+                <input type="submit" class="button is-link" value="start">
+              </form>
+              <form action="/containers/stop/{{ .container.Hash_id }}" method="GET">
+                <input type="hidden" name="_token" value="test">
+                <input type="submit" class="button is-warning" value="stop">
+              </form>
+              <form action="/containers/delete/{{ .container.Hash_id }}" method="GET">
+                <input type="submit" class="button is-danger" value="delete">
+              </form>
+            </div>
+					</div>
+				</div>
+			</article>
+		</div>
+	</main>
 </body>
 </html>
 {{ end }}

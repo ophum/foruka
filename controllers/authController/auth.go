@@ -19,7 +19,7 @@ func Auth(c *gin.Context) authModel.User {
 	session := sessions.Default(c)
 	user_id := session.Get("user_id")
 	if user_id == nil {
-		c.Redirect(301, "/login")
+		c.Redirect(302, "/login")
 	}
 	user := authModel.GetUser(user_id.(uint))
 	return user
@@ -36,13 +36,12 @@ func Verified(c *gin.Context) {
 			"Name": user.Name,
 		})
 	} else {
-		c.Writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-		c.Redirect(301, "/login")
+		c.Redirect(302, "/login")
 	}
 }
 func Index(c *gin.Context) {
 	if IsAuth(c) {
-		c.Redirect(301, "/")
+		c.Redirect(302, "/")
 	} else {
 		c.HTML(200, "home/login.tmpl", gin.H{})
 	}
@@ -62,9 +61,9 @@ func Login(c *gin.Context) {
 		session.Save()
 		session.Set("user_id", user.ID)
 		session.Save()
-		c.Redirect(301, "/")
+		c.Redirect(302, "/")
 	} else {
-		c.Redirect(301, "/login")
+		c.Redirect(302, "/login")
 	}
 }
 
@@ -82,7 +81,7 @@ func Register(c *gin.Context) {
 	session := sessions.Default(c)
 	session.Set("user_id", user.ID)
 	session.Save()
-	c.Redirect(301, "/")
+	c.Redirect(302, "/")
 }
 
 func Logout(c *gin.Context) {
@@ -91,5 +90,5 @@ func Logout(c *gin.Context) {
 	session.Save()
 
 	c.Writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-	c.Redirect(301, "/")
+	c.Redirect(302, "/")
 }

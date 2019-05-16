@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lxc/lxd/shared/api"
 	auth "github.com/ophum/foruka/controllers/authController"
 	contmodel "github.com/ophum/foruka/models/containerModel"
 )
@@ -29,7 +30,7 @@ func Store(c *gin.Context) {
 	image := c.PostForm("image")
 
 	contmodel.Create(user.ID, name, image)
-	c.Redirect(301, "/containers/")
+	c.Redirect(302, "/containers/")
 }
 
 func Show(c *gin.Context) {
@@ -39,9 +40,15 @@ func Show(c *gin.Context) {
 	var cont contmodel.Container
 	cont = contmodel.GetContainer(user.ID, hashId)
 	status, _ := contmodel.Status(cont.Name)
+	var addresses = []api.ContainerStateNetworkAddress{}
+	if status.Status == "Running" {
+		addresses = status.Network["eth0"].Addresses
+	}
+
 	c.HTML(200, "containers/show.tmpl", gin.H{
 		"container": cont,
 		"status":    status,
+		"addresses": addresses,
 	})
 }
 
@@ -55,7 +62,8 @@ func Start(c *gin.Context) {
 	if err != nil {
 		fmt.Println("err: ", err)
 	}
-	c.Redirect(301, "/containers/show/"+hashId)
+
+	c.Redirect(302, "/containers/show/"+hashId)
 }
 
 func Stop(c *gin.Context) {
@@ -67,7 +75,8 @@ func Stop(c *gin.Context) {
 	if err != nil {
 		fmt.Println("err: ", err)
 	}
-	c.Redirect(301, "/containers/show/"+hashId)
+
+	c.Redirect(302, "/containers/show/"+hashId)
 }
 
 func Delete(c *gin.Context) {
@@ -81,5 +90,6 @@ func Delete(c *gin.Context) {
 	}
 
 	contmodel.Delete(hashId)
-	c.Redirect(301, "/containers/")
+
+	c.Redirect(302, "/containers/")
 }

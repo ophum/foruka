@@ -27,33 +27,50 @@
 		</div>
 	</nav>
 
-	<div class="container">
-		<div class="tile">
-			<form action="/containers/store" method="POST"> 
-				<div class="field">
-					<label class="label">Container Name</label>
-					<div class="control">
-						<input class="input" type="text" id="name" name="name">
-					</div>
-				</div>
-				<div class="field">
-					<label class="label">Image</label>
-					<div class="control">
-						<div class="select">
-							<select name="image">
-								<option>ubuntu</option>
-							</select>
+	<main class="columns">
+		<div class="submenu column is-3">
+			<aside class="box menu">
+				<ul class="menu-list">
+					<li><a class="button" href="/containers">containers</a></li>
+					<li><a class="button" href="/networks">networks</a></li>
+				</ul>
+			</aside>
+		</div>
+
+		<div class="column">
+			<article class="box media">
+				<div class="media-content">
+					<div class="content">
+						<div class="tile">
+							<form action="/containers/store" method="POST"> 
+								<div class="field">
+									<label class="label">Container Name</label>
+									<div class="control">
+										<input class="input" type="text" id="name" name="name">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">Image</label>
+									<div class="control">
+										<div class="select">
+											<select name="image">
+												<option>ubuntu</option>
+											</select>
+										</div>
+									</div>
+								</div>
+								<div class="field">
+									<div class="control">
+										<input class="button is-link" type="submit" value="create"></p>
+									</div>
+								</div>
+							</form>
 						</div>
 					</div>
 				</div>
-				<div class="field">
-					<div class="control">
-						<input class="button is-link" type="submit" value="create"></p>
-					</div>
-				</div>
-			</form>
+			</article>
 		</div>
-	</div>
+	</main>
 </body>
 </html>
 
