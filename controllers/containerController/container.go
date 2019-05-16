@@ -30,7 +30,7 @@ func Store(c *gin.Context) {
 	image := c.PostForm("image")
 
 	contmodel.Create(user.ID, name, image)
-	c.Redirect(301, "/containers/")
+	c.Redirect(302, "/containers/")
 }
 
 func Show(c *gin.Context) {
@@ -63,7 +63,7 @@ func Start(c *gin.Context) {
 		fmt.Println("err: ", err)
 	}
 
-	c.Redirect(301, "/containers/show/"+hashId)
+	c.Redirect(302, "/containers/show/"+hashId)
 }
 
 func Stop(c *gin.Context) {
@@ -76,7 +76,7 @@ func Stop(c *gin.Context) {
 		fmt.Println("err: ", err)
 	}
 
-	c.Redirect(301, "/containers/show/"+hashId)
+	c.Redirect(302, "/containers/show/"+hashId)
 }
 
 func Delete(c *gin.Context) {
@@ -91,5 +91,5 @@ func Delete(c *gin.Context) {
 
 	contmodel.Delete(hashId)
 
-	c.Redirect(301, "/containers/")
+	c.Redirect(302, "/containers/")
 }
