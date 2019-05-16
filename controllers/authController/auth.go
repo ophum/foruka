@@ -36,6 +36,7 @@ func Verified(c *gin.Context) {
 			"Name": user.Name,
 		})
 	} else {
+		c.Writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 		c.Redirect(301, "/login")
 	}
 }
@@ -89,5 +90,6 @@ func Logout(c *gin.Context) {
 	session.Clear()
 	session.Save()
 
+	c.Writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.Redirect(301, "/")
 }
