@@ -29,15 +29,15 @@
 
   <div class="container">
     <div class="tile">
-      <form action="/containers/store" method="POST"> 
-        <div class="field">
-          <label class="label">Container Name</label>
-          <div class="control">
-            <input class="input" type="text" id="name" name="name" value="{{.container.Name}}">
-          </div>
-        </div>
-      </form>
-      {{ .status }}
+
+      <table class="table">
+      <tr><td>Name</td><td>{{ .container.Name }}</td></tr>
+      <tr><td>Hash</td><td>{{ .container.Hash_id }}</td></tr>
+      <tr><td>Status</td><td>{{ .status.Status }}</td></tr>
+      {{ range .addresses }}
+      <tr><td>{{ .Family}}</td><td>{{ .Address }}/{{ .Netmask }}</td></tr>
+      {{ end }}
+      </table>
 
       <a class="button is-link" href="/containers/start/{{.container.Hash_id}}">start</a>
       <a class="button is-warning" href="/containers/stop/{{.container.Hash_id}}">stop</a>

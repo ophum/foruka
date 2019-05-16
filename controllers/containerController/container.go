@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lxc/lxd/shared/api"
 	auth "github.com/ophum/foruka/controllers/authController"
 	contmodel "github.com/ophum/foruka/models/containerModel"
 )
@@ -39,9 +40,14 @@ func Show(c *gin.Context) {
 	var cont contmodel.Container
 	cont = contmodel.GetContainer(user.ID, hashId)
 	status, _ := contmodel.Status(cont.Name)
+	var addresses = []api.ContainerStateNetworkAddress{}
+	if status.Status == "Running" {
+		addresses = status.Network["eth0"].Addresses
+	}
 	c.HTML(200, "containers/show.tmpl", gin.H{
 		"container": cont,
 		"status":    status,
+		"addresses": addresses,
 	})
 }
 
