@@ -10,6 +10,7 @@ import (
 	auth "github.com/ophum/foruka/controllers/authController"
 	cont "github.com/ophum/foruka/controllers/containerController"
 	home "github.com/ophum/foruka/controllers/homeController"
+	networks "github.com/ophum/foruka/controllers/networkController"
 )
 
 func main() {
@@ -44,5 +45,10 @@ func main() {
 	containers.GET("/stop/:id", cont.Stop)
 	containers.GET("/start/:id", cont.Start)
 	containers.GET("/delete/:id", cont.Delete)
+
+	net := r.Group("/networks")
+	net.GET("/", networks.Index)
+	net.GET("/create", networks.Create)
+
 	r.Run()
 }
