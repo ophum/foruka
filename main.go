@@ -49,6 +49,8 @@ func main() {
 	net := r.Group("/networks")
 	net.GET("/", networks.Index)
 	net.GET("/create", networks.Create)
+	net.GET("/store", networks.Create)
+	net.POST("/store", networks.Store)
 
 	r.Run()
 }
