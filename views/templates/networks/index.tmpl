@@ -16,7 +16,7 @@
 					<p class="control">
 						<a class="button" href="/networks/create">
 							<span>
-								create EndPoint
+								create EndPoint	
 							</span>
 						</a>
 					</p>
@@ -47,6 +47,14 @@
 			<article class="box media">
 				<div class="media-content">
 					<div class="content">
+						<table class="table is-hoverable">
+							<thead>
+							<tr><th>ID</th><th>Name</th><th>EndPoint</th><th></th><th>Container</th></tr>
+							</thead>
+							{{range .EndPoints}}
+							<tr><td><a href="/networks/show/{{.Hash}}">{{.Hash}}<a></td><td>{{.Name}}</td><td>humsoft.xyz:{{.EndPoint}}</td><td>→</td><td>{{.ContName}}:{{.Port}}</td></tr>
+							{{end}}		   
+						</table>
 					</div>
 				</div>
 			</article>
