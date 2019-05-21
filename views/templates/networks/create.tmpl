@@ -42,7 +42,7 @@
 				<div class="media-content">
 					<div class="content">
 						<div class="tile">
-							<form action="/containers/store" method="POST"> 
+							<form action="/networks/store" method="POST"> 
 								<div class="field">
 									<label class="label">EndPoint Name</label>
 									<div class="control">
@@ -53,9 +53,9 @@
 								<div class="field">
 									<label class="label">Container</label>
 									<div class="select">
-										<select>
+										<select name="container">
 											{{ range .containers }}
-												<option name="{{ .Hash_id }}">{{ .Name }}</option>
+												<option value="{{ .Hash_id }}">{{ .Name }}</option>
 											{{ end }}
 										</select>
 									</div>
