@@ -17,6 +17,22 @@ func DelRouter(name string) error {
 	return err
 }
 
+func AddIpRouter(router, adapter, addr string) error {
+	err := exec.Command(
+		"ip", "netns", "exec", router,
+		"ip", "addr", "add", addr, "dev", adapter,
+	).Run()
+	return err
+}
+
+func DelIpRouter(router, adapter, addr string) error {
+	err := exec.Command(
+		"ip", "netns", "exec", router,
+		"ip", "addr", "del", addr, "dev", adapter,
+	).Run()
+	return err
+}
+
 func AddEthAdapter(router_name, adapter_name, peer_name string) error {
 	err := exec.Command("ip", "link", "add", adapter_name, "type", "veth", "peer", "name", peer_name).Run()
 	if err != nil {
