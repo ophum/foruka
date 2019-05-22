@@ -115,3 +115,71 @@ func DelDNatHost(proto string, port uint, daddr string, dport uint) error {
 
 	return err
 }
+
+func AddDNatRouter(router string, proto string, port uint, daddr string, dport uint) error {
+
+	err := checkProto(proto)
+	if err != nil {
+		return err
+	}
+
+	err = checkPort(port)
+	if err != nil {
+		return err
+	}
+
+	err = checkPort(dport)
+	if err != nil {
+		return fmt.Errorf("Invalid dport -> %d", dport)
+	}
+
+	if net.ParseIP(daddr) == nil {
+		return fmt.Errorf("Invalid daddr -> %s", daddr)
+	}
+
+	err = exec.Command(
+		"ip", "netns", "exec", router,
+		"iptables",
+		"-t", "nat",
+		"-A", "PREROUTING",
+		"-p", proto, "--dport", fmt.Sprintf("%d", port),
+		"-j", "DNAT",
+		"--to-destination", fmt.Sprintf("%s:%d", daddr, dport),
+	).Run()
+
+	return err
+}
+
+func DelDNatRouter(router string, proto string, port uint, daddr string, dport uint) error {
+
+	err := checkProto(proto)
+	if err != nil {
+		return err
+	}
+
+	err = checkPort(port)
+	if err != nil {
+		return err
+	}
+
+	err = checkPort(dport)
+	if err != nil {
+		return fmt.Errorf("Invalid dport -> %d", dport)
+	}
+
+	if net.ParseIP(daddr) == nil {
+		return fmt.Errorf("Invalid daddr -> %s", daddr)
+	}
+
+	err = exec.Command(
+		"ip", "netns", "exec", router,
+		"iptables",
+		"-t", "nat",
+		"-D", "PREROUTING",
+		"-p", proto, "--dport", fmt.Sprintf("%d", port),
+		"-j", "DNAT",
+		"--to-destination", fmt.Sprintf("%s:%d", daddr, dport),
+	).Run()
+
+	return err
+}
