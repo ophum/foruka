@@ -32,6 +32,24 @@ func DelEthAdapter(adapter_name string) error {
 	return err
 }
 
+func UpEthAdapter(router, adapter_name string) error {
+	err := exec.Command(
+		"ip", "netns", "exec", router,
+		"ip", "link", "set", adapter_name, "up",
+	).Run()
+
+	return err
+}
+
+func DownEthAdapter(router, adapter_name string) error {
+	err := exec.Command(
+		"ip", "netns", "exec", router,
+		"ip", "link", "set", adapter_name, "down",
+	).Run()
+
+	return err
+}
+
 func checkProto(proto string) error {
 	switch proto {
 	case "tcp":
