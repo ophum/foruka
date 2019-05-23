@@ -196,11 +196,6 @@ func (r *Router) FetchRunning() error {
 			Adapter:    adapter,
 		}
 	}
-	DispRouter(*r)
-	DispRouter(*r.Running)
-	r.Adapters["eth0"].Addr = net.ParseIP("10.0.0.1")
-	DispRouter(*r)
-	DispRouter(*r.Running)
 	return nil
 }
 
