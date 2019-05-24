@@ -80,8 +80,7 @@ func (r *Router) FetchRunning() error {
 		if len(sl) == 3 {
 			name := sl[0]
 			addr := net.ParseIP(sl[1])
-			prefix, err := strconv.Atoi(sl[2])
-			fmt.Println("err:", err)
+			prefix, _ := strconv.Atoi(sl[2])
 			r.Adapters[sl[0]] = &Interface{
 				Name:   name,
 				Addr:   addr,
@@ -262,7 +261,49 @@ func (r *Router) Apply() {
 	}
 
 	// routes update...
+	for k, v := range r.Routes {
+		rv, ok := r.Running.Routes[k]
+		if ok {
+			for kk, vv := range v {
+				rvv, ok := rv[kk]
+				if ok {
+					if !(rvv.Dest.Equal(vv.Dest) && rvv.DestPrefix == vv.DestPrefix && rvv.Next.Equal(vv.Next) && rvv.Adapter == vv.Adapter) {
+						r.AddRoute(vv.Dest.String(), vv.DestPrefix)
+						r.Running.DelRoute(rvv.Dest.String(), rvv.DestPrefix)
+					}
+				} else {
+					r.AddRoute(vv.Dest.String(), vv.DestPrefix)
+				}
+			}
+			// check routes
+		} else {
+			for _, vv := range v {
+				r.AddRoute(vv.Dest.String(), vv.DestPrefix)
+			}
+		}
+	}
+}
 
+func (r *Router) AddRoute(dest string, prefix uint) error {
+	route := r.Routes[dest][prefix]
+
+	err := exec.Command(
+		"ip", "netns", "exec", r.Name,
+		"ip", "route", "add", fmt.Sprintf("%s/%d", route.Dest.String(), route.DestPrefix),
+		"via", route.Next.String(), "dev", route.Adapter,
+	).Run()
+	return err
+}
+
+func (r *Router) DelRoute(dest string, prefix uint) error {
+	route := r.Routes[dest][prefix]
+
+	err := exec.Command(
+		"ip", "netns", "exec", r.Name,
+		"ip", "route", "del", fmt.Sprintf("%s/%d", route.Dest.String(), route.DestPrefix),
+		"via", route.Next.String(), "dev", route.Adapter,
+	).Run()
+	return err
 }
 func (r *Router) Add(name string) error {
 	err := exec.Command("ip", "netns", "add", name).Run()
