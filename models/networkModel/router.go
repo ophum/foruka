@@ -248,6 +248,18 @@ func (r *Router) Apply() {
 	}
 
 	// dnats update...
+	for k, v := range r.Dnats {
+		rv, ok := r.Running.Dnats[k]
+		if ok {
+			// check dnat
+			if !(rv.Proto == v.Proto && rv.Port == v.Port && rv.Daddr.Equal(v.Daddr) && rv.Dport == v.Dport) {
+				r.AddDNat(v.Port)
+				r.Running.DelDNat(rv.Port)
+			}
+		} else {
+			r.AddDNat(v.Port)
+		}
+	}
 
 	// routes update...
 
@@ -406,69 +418,61 @@ func DelDNatHost(proto string, port uint, daddr string, dport uint) error {
 	return err
 }
 
-func AddDNatRouter(router string, proto string, port uint, daddr string, dport uint) error {
-
-	err := checkProto(proto)
+func (r *Router) AddDNat(port uint) error {
+	dnat := r.Dnats[port]
+	err := checkProto(dnat.Proto)
 	if err != nil {
 		return err
 	}
 
-	err = checkPort(port)
+	err = checkPort(dnat.Port)
 	if err != nil {
 		return err
 	}
 
-	err = checkPort(dport)
+	err = checkPort(dnat.Dport)
 	if err != nil {
-		return fmt.Errorf("Invalid dport -> %d", dport)
-	}
-
-	if net.ParseIP(daddr) == nil {
-		return fmt.Errorf("Invalid daddr -> %s", daddr)
+		return fmt.Errorf("Invalid dport -> %d", dnat.Dport)
 	}
 
 	err = exec.Command(
-		"ip", "netns", "exec", router,
+		"ip", "netns", "exec", r.Name,
 		"iptables",
 		"-t", "nat",
 		"-A", "PREROUTING",
-		"-p", proto, "--dport", fmt.Sprintf("%d", port),
+		"-p", dnat.Proto, "--dport", fmt.Sprintf("%d", dnat.Port),
 		"-j", "DNAT",
-		"--to-destination", fmt.Sprintf("%s:%d", daddr, dport),
+		"--to-destination", fmt.Sprintf("%s:%d", dnat.Daddr, dnat.Dport),
 	).Run()
 
 	return err
 }
 
-func DelDNatRouter(router string, proto string, port uint, daddr string, dport uint) error {
-
-	err := checkProto(proto)
+func (r *Router) DelDNat(port uint) error {
+	dnat := r.Dnats[port]
+	err := checkProto(dnat.Proto)
 	if err != nil {
 		return err
 	}
 
-	err = checkPort(port)
+	err = checkPort(dnat.Port)
 	if err != nil {
 		return err
 	}
 
-	err = checkPort(dport)
+	err = checkPort(dnat.Dport)
 	if err != nil {
-		return fmt.Errorf("Invalid dport -> %d", dport)
-	}
-
-	if net.ParseIP(daddr) == nil {
-		return fmt.Errorf("Invalid daddr -> %s", daddr)
+		return fmt.Errorf("Invalid dport -> %d", dnat.Dport)
 	}
 
 	err = exec.Command(
-		"ip", "netns", "exec", router,
+		"ip", "netns", "exec", r.Name,
 		"iptables",
 		"-t", "nat",
 		"-D", "PREROUTING",
-		"-p", proto, "--dport", fmt.Sprintf("%d", port),
+		"-p", dnat.Proto, "--dport", fmt.Sprintf("%d", dnat.Port),
 		"-j", "DNAT",
-		"--to-destination", fmt.Sprintf("%s:%d", daddr, dport),
+		"--to-destination", fmt.Sprintf("%s:%d", dnat.Daddr, dnat.Dport),
 	).Run()
 
 	return err
