@@ -239,6 +239,7 @@ func (r *Router) Apply() {
 			// check ip and prefix
 			if !(rv.Addr.Equal(v.Addr) && rv.Prefix == v.Prefix) {
 				r.AddIp(v.Name)
+				r.Running.DelIp(rv.Name)
 			}
 		} else { // not found, create eth adapter
 			r.AddEthAdapter(v.Name)
@@ -279,10 +280,10 @@ func (r *Router) AddIp(adapter string) error {
 	return err
 }
 
-func DelIpRouter(router, adapter, addr string) error {
+func (r *Router) DelIp(adapter string) error {
 	err := exec.Command(
-		"ip", "netns", "exec", router,
-		"ip", "addr", "del", addr, "dev", adapter,
+		"ip", "netns", "exec", r.Name,
+		"ip", "addr", "del", r.Adapters[adapter].Addr.String(), "dev", adapter,
 	).Run()
 	return err
 }
