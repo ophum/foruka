@@ -74,20 +74,24 @@ func (r *Router) FetchRunning() error {
 		if str == "" {
 			continue
 		}
+
 		str = strings.Replace(str, "/", " ", 1)
 		sl := strings.Split(str, " ")
-		name := sl[0]
-		addr := net.ParseIP(sl[1])
-		prefix, _ := strconv.Atoi(sl[2])
-		r.Adapters[sl[0]] = &Interface{
-			Name:   name,
-			Addr:   addr,
-			Prefix: uint(prefix),
-		}
-		r.Running.Adapters[sl[0]] = &Interface{
-			Name:   name,
-			Addr:   addr,
-			Prefix: uint(prefix),
+		if len(sl) == 3 {
+			name := sl[0]
+			addr := net.ParseIP(sl[1])
+			prefix, err := strconv.Atoi(sl[2])
+			fmt.Println("err:", err)
+			r.Adapters[sl[0]] = &Interface{
+				Name:   name,
+				Addr:   addr,
+				Prefix: uint(prefix),
+			}
+			r.Running.Adapters[sl[0]] = &Interface{
+				Name:   name,
+				Addr:   addr,
+				Prefix: uint(prefix),
+			}
 		}
 	}
 
@@ -225,11 +229,29 @@ func (r *Router) Exists() bool {
 
 func (r *Router) Apply() {
 	if !r.Exists() {
-		r.AddRouter(r.Name)
+		r.Add(r.Name)
 	}
 
+	// adapters update...
+	for k, v := range r.Adapters {
+		rv, ok := r.Running.Adapters[k]
+		if ok {
+			// check ip and prefix
+			if !(rv.Addr.Equal(v.Addr) && rv.Prefix == v.Prefix) {
+				r.AddIp(v.Name)
+			}
+		} else { // not found, create eth adapter
+			r.AddEthAdapter(v.Name)
+			r.AddIp(v.Name)
+		}
+	}
+
+	// dnats update...
+
+	// routes update...
+
 }
-func (r *Router) AddRouter(name string) error {
+func (r *Router) Add(name string) error {
 	err := exec.Command("ip", "netns", "add", name).Run()
 	if err != nil {
 		return err
@@ -247,10 +269,12 @@ func DelRouter(name string) error {
 	return err
 }
 
-func AddIpRouter(router, adapter, addr string) error {
+func (r *Router) AddIp(adapter string) error {
+	adap := r.Adapters[adapter]
+	ipv4 := fmt.Sprintf("%s/%d", adap.Addr.String(), adap.Prefix)
 	err := exec.Command(
-		"ip", "netns", "exec", router,
-		"ip", "addr", "add", addr, "dev", adapter,
+		"ip", "netns", "exec", r.Name,
+		"ip", "addr", "add", ipv4, "dev", adapter,
 	).Run()
 	return err
 }
@@ -263,13 +287,14 @@ func DelIpRouter(router, adapter, addr string) error {
 	return err
 }
 
-func AddEthAdapter(router_name, adapter_name, peer_name string) error {
-	err := exec.Command("ip", "link", "add", adapter_name, "type", "veth", "peer", "name", peer_name).Run()
+func (r *Router) AddEthAdapter(adapter string) error {
+	peer_name := r.Adapters[adapter].Peer_name
+	err := exec.Command("ip", "link", "add", adapter, "type", "veth", "peer", "name", peer_name).Run()
 	if err != nil {
 		return err
 	}
 
-	err = exec.Command("ip", "link", "set", peer_name, "netns", router_name, "up").Run()
+	err = exec.Command("ip", "link", "set", adapter, "netns", r.Name, "up").Run()
 	return err
 }
 
