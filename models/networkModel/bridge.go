@@ -5,35 +5,39 @@ import (
 	"os/exec"
 )
 
-func AddEthAdapterBridge(bridge, adapter_name string) error {
+type Bridge struct {
+	Name string
+}
+
+func (b *Bridge) AddEthAdapter(adapter_name string) error {
 	err := exec.Command(
-		"brctl", "addif", bridge, adapter_name,
+		"brctl", "addif", b.Name, adapter_name,
 	).Run()
 	return err
 }
 
-func DelEthAdapterBridge(bridge, adapter_name string) error {
+func (b *Bridge) DelEthAdapter(adapter_name string) error {
 	err := exec.Command(
-		"brctl", "delif", bridge, adapter_name,
+		"brctl", "delif", b.Name, adapter_name,
 	).Run()
 	return err
 }
 
-func UpEthAdapterBridge(adapter_name string) error {
+func (b *Bridge) UpEthAdapter(adapter_name string) error {
 	err := exec.Command(
 		"ip", "link", "set", adapter_name, "up",
 	).Run()
 	return err
 }
 
-func DownEthAdapterBridge(adapter_name string) error {
+func (b *Bridge) DownEthAdapter(adapter_name string) error {
 	err := exec.Command(
 		"ip", "link", "set", adapter_name, "down",
 	).Run()
 	return err
 }
 
-func AddVlan(adapter_name string, vid uint) error {
+func (b *Bridge) AddVlan(adapter_name string, vid uint) error {
 	err := exec.Command(
 		"bridge", "vlan", "add",
 		"vid", fmt.Sprintf("%d", vid),
@@ -43,7 +47,7 @@ func AddVlan(adapter_name string, vid uint) error {
 	return err
 }
 
-func DelVlan(adapter_name string, vid uint) error {
+func (b *Bridge) DelVlan(adapter_name string, vid uint) error {
 	err := exec.Command(
 		"bridge", "vlan", "del",
 		"dev", adapter_name,
