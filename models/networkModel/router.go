@@ -529,3 +529,26 @@ func (r *Router) DelDNat(port uint) error {
 
 	return err
 }
+
+func (r *Router) SetDNat(proto string, port uint, daddr net.IP, dport uint) {
+	if r.Dnats == nil {
+		r.Dnats = map[uint]*DNat{}
+	}
+	if r.Dnats[uint(port)] == nil {
+		r.Dnats[uint(port)] = &DNat{
+			Proto: proto,
+			Port:  port,
+			Daddr: daddr,
+			Dport: dport,
+		}
+	} else {
+		r.Dnats[uint(port)].Proto = proto
+		r.Dnats[uint(port)].Port = port
+		r.Dnats[uint(port)].Daddr = daddr
+		r.Dnats[uint(port)].Dport = dport
+	}
+}
+
+func (r *Router) UnsetDNat(dport uint) {
+	delete(r.Dnats, dport)
+}
