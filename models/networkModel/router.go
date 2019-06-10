@@ -286,10 +286,15 @@ func (r *Router) Apply() {
 
 func (r *Router) AddRoute(dest string, prefix uint) error {
 	route := r.Routes[dest][prefix]
-
+	var d string
+	if route.Dest.Equal(net.ParseIP("0.0.0.0")) && route.DestPrefix == 0 {
+		d = "default"
+	} else {
+		d = fmt.Sprintf("%s/%d", route.Dest.String(), route.DestPrefix)
+	}
 	err := exec.Command(
 		"ip", "netns", "exec", r.Name,
-		"ip", "route", "add", fmt.Sprintf("%s/%d", route.Dest.String(), route.DestPrefix),
+		"ip", "route", "add", d,
 		"via", route.Next.String(), "dev", route.Adapter,
 	).Run()
 	return err
@@ -297,10 +302,16 @@ func (r *Router) AddRoute(dest string, prefix uint) error {
 
 func (r *Router) DelRoute(dest string, prefix uint) error {
 	route := r.Routes[dest][prefix]
+	var d string
 
+	if route.Dest.Equal(net.ParseIP("0.0.0.0")) && route.DestPrefix == 0 {
+		d = "default"
+	} else {
+		d = fmt.Sprintf("%s/%d", route.Dest, route.DestPrefix)
+	}
 	err := exec.Command(
 		"ip", "netns", "exec", r.Name,
-		"ip", "route", "del", fmt.Sprintf("%s/%d", route.Dest.String(), route.DestPrefix),
+		"ip", "route", "del", d,
 		"via", route.Next.String(), "dev", route.Adapter,
 	).Run()
 	return err
