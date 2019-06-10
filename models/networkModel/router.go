@@ -363,6 +363,29 @@ func (r *Router) AddEthAdapter(adapter string) error {
 	return err
 }
 
+func (r *Router) SetEthAdapter(adapter string, addr net.IP, prefix uint) {
+	if r.Adapters == nil {
+		r.Adapters = map[string]*Interface{}
+	}
+
+	_, ok := r.Adapters[adapter]
+	if ok {
+		r.Adapters[adapter].Name = adapter
+		r.Adapters[adapter].Addr = addr
+		r.Adapters[adapter].Prefix = prefix
+	} else {
+		r.Adapters[adapter] = &Interface{
+			Name:   adapter,
+			Addr:   addr,
+			Prefix: prefix,
+		}
+	}
+}
+
+func (r *Router) UnsetEthAdapter(adapter string) {
+	delete(r.Adapters, adapter)
+}
+
 func DelEthAdapter(adapter_name string) error {
 	err := exec.Command("ip", "link", "del", adapter_name).Run()
 	return err
