@@ -36,7 +36,12 @@ func Create(user_id uint, name string, hash string, port uint) {
 	fmt.Println("hash src => " + user.Name + name + hash)
 	fmt.Println("gen hash => " + e)
 
-	endpoint := uint(25565)
+	lastEndpoint := EndPoint{}
+	res := db.Where("User_id = ?", user_id).Last(&lastEndpoint)
+	endpoint := uint(user_id*1024 + 1024)
+	if res.Error == nil {
+		endpoint = lastEndpoint.EndPoint + 1
+	}
 	db.Create(&EndPoint{
 		User_id:  user_id,
 		Name:     name,
