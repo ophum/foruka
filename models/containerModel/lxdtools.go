@@ -2,6 +2,7 @@ package containerModel
 
 import (
 	"fmt"
+	"os"
 
 	lxd "github.com/lxc/lxd/client"
 	"github.com/lxc/lxd/shared/api"
@@ -27,6 +28,30 @@ func Status(name string) (*api.ContainerState, error) {
 	}
 	fmt.Println(str)
 	return stat, nil
+}
+
+func ExecContainer(name string, cmds []string) error {
+	req := api.ContainerExecPost{
+		Command:     cmds,
+		WaitForWS:   true,
+		Interactive: false,
+	}
+	args := lxd.ContainerExecArgs{
+		Stdin:  os.Stdin,
+		Stdout: os.Stdout,
+		Stderr: os.Stderr,
+	}
+
+	op, err := cont.ExecContainer(name, req, &args)
+	if err != nil {
+		return err
+	}
+
+	err = op.Wait()
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func CreateContainer(name string, alias string) (string, error) {
