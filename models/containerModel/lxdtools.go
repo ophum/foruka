@@ -34,7 +34,7 @@ func CreateContainer(name string, alias string) (string, error) {
 		Name: name,
 		Source: api.ContainerSource{
 			Type:     "image",
-			Alias:    "ubuntu/disco",
+			Alias:    alias,
 			Server:   "https://images.linuxcontainers.org",
 			Protocol: "simplestreams",
 		},

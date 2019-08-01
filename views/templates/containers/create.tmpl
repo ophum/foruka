@@ -49,12 +49,29 @@
 										<input class="input" type="text" id="name" name="name">
 									</div>
 								</div>
+
+								<div class="field">
+									<label class="label">User Name</label>
+									<div class="control">
+										<input class="input" type="text" id="user" name="user">
+									</div>
+								</div>
+								<div class="field">
+									<label class="label">SSH Authorized Key</label>
+									<div class="control">
+										<textarea class="textarea" id="ssh-authorized-key" name="ssh-authorized-key"></textarea>
+									</div>
+								</div>
+
+
 								<div class="field">
 									<label class="label">Image</label>
 									<div class="control">
 										<div class="select">
 											<select name="image">
-												<option>ubuntu</option>
+												<option value="ubuntu/disco">ubuntu 19.04</option>
+												<option value="debian/9">debian/9</option>
+												<option value="centos/7">centos/7</option>
 											</select>
 										</div>
 									</div>

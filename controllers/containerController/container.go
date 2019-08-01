@@ -2,6 +2,7 @@ package containerController
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lxc/lxd/shared/api"
@@ -27,8 +28,16 @@ func Create(c *gin.Context) {
 func Store(c *gin.Context) {
 	user := auth.Auth(c)
 	name := c.PostForm("name")
+	username := c.PostForm("user")
+	sshkey := c.PostForm("ssh-authorized-key")
 	image := c.PostForm("image")
 
+	fmt.Println("user: ", user)
+	fmt.Println("name: ", name)
+	fmt.Println("username: ", username)
+	fmt.Println("ssh-authorized-key: ", sshkey)
+	image = strings.Replace(image, " ", "", -1)
+	fmt.Println("image:", image)
 	contmodel.Create(user.ID, name, image)
 	c.Redirect(302, "/containers/")
 }
