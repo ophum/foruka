@@ -39,6 +39,20 @@ func Store(c *gin.Context) {
 	image = strings.Replace(image, " ", "", -1)
 	fmt.Println("image:", image)
 	contmodel.Create(user.ID, name, image)
+
+	contmodel.ExecContainer(user.Name+"-"+name, []string{"apt", "install", "-y", "openssh-server"})
+	cmdlines := [][]string{
+		[]string{"useradd", "-m", "-s", "/bin/bash", username},
+		[]string{"mkdir", "-p", fmt.Sprintf("/home/%s/.ssh", username)},
+		[]string{"bash", "-c", fmt.Sprintf("echo \"%s\" > /home/%s/.ssh/authorized_keys", sshkey, username)},
+		[]string{"chown", "-R", fmt.Sprintf("%s.%s", username, username), fmt.Sprintf("/home/%s/.ssh", username)},
+		[]string{"chmod", "700", fmt.Sprintf("/home/%s/.ssh", username)},
+		[]string{"chmod", "600", fmt.Sprintf("/home/%s/.ssh/authorized_keys", username)},
+	}
+
+	for _, cmd := range cmdlines {
+		contmodel.ExecContainer(user.Name+"-"+name, cmd)
+	}
 	c.Redirect(302, "/containers/")
 }
 
