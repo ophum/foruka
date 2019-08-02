@@ -48,6 +48,7 @@ func Store(c *gin.Context) {
 		[]string{"chown", "-R", fmt.Sprintf("%s.%s", username, username), fmt.Sprintf("/home/%s/.ssh", username)},
 		[]string{"chmod", "700", fmt.Sprintf("/home/%s/.ssh", username)},
 		[]string{"chmod", "600", fmt.Sprintf("/home/%s/.ssh/authorized_keys", username)},
+		[]string{"bash", "-c", fmt.Sprintf("echo \"%s ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/%s", username, username)},
 	}
 
 	for _, cmd := range cmdlines {
