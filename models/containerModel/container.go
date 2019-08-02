@@ -56,7 +56,7 @@ func Create(id uint, name string, image string) error {
 	e := fmt.Sprintf("%x", h.Sum(nil))
 	fmt.Println("hash src => " + user.Name + name)
 	fmt.Println("gen hash => " + e)
-	_, err = CreateContainer(user.Name+"-"+name, "ubuntu:18.04")
+	_, err = CreateContainer(user.Name+"-"+name, image)
 	if err != nil {
 		fmt.Println(err)
 	}

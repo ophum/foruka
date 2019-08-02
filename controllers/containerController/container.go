@@ -2,6 +2,7 @@ package containerController
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lxc/lxd/shared/api"
@@ -27,9 +28,32 @@ func Create(c *gin.Context) {
 func Store(c *gin.Context) {
 	user := auth.Auth(c)
 	name := c.PostForm("name")
+	username := c.PostForm("user")
+	sshkey := c.PostForm("ssh-authorized-key")
 	image := c.PostForm("image")
 
+	fmt.Println("user: ", user)
+	fmt.Println("name: ", name)
+	fmt.Println("username: ", username)
+	fmt.Println("ssh-authorized-key: ", sshkey)
+	image = strings.Replace(image, " ", "", -1)
+	fmt.Println("image:", image)
 	contmodel.Create(user.ID, name, image)
+
+	contmodel.ExecContainer(user.Name+"-"+name, []string{"apt", "install", "-y", "openssh-server"})
+	cmdlines := [][]string{
+		[]string{"useradd", "-m", "-s", "/bin/bash", username},
+		[]string{"mkdir", "-p", fmt.Sprintf("/home/%s/.ssh", username)},
+		[]string{"bash", "-c", fmt.Sprintf("echo \"%s\" > /home/%s/.ssh/authorized_keys", sshkey, username)},
+		[]string{"chown", "-R", fmt.Sprintf("%s.%s", username, username), fmt.Sprintf("/home/%s/.ssh", username)},
+		[]string{"chmod", "700", fmt.Sprintf("/home/%s/.ssh", username)},
+		[]string{"chmod", "600", fmt.Sprintf("/home/%s/.ssh/authorized_keys", username)},
+		[]string{"bash", "-c", fmt.Sprintf("echo \"%s ALL=(ALL) NOPASSWD: ALL\" > /etc/sudoers.d/%s", username, username)},
+	}
+
+	for _, cmd := range cmdlines {
+		contmodel.ExecContainer(user.Name+"-"+name, cmd)
+	}
 	c.Redirect(302, "/containers/")
 }
 
