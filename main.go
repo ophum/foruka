@@ -13,10 +13,27 @@ func main() {
 		return
 	}
 
-	err = frk.DeleteNetwork("test1234")
+	//	err = frk.CreateRouterProfile("testtestprofile", map[string]string{
+	//		"eth0": "lxdbr0",
+	//		"eth1": "testtesttest",
+	//	})
+	//
+	err = frk.CreateRouter("hogeRouter", map[string]string{
+		"eth0": "lxdbr0",
+		"ens1": "testtesttest",
+	})
+
 	if err != nil {
 		fmt.Println(err)
-		return
+		//return
+	}
+	err = frk.StartRouter("hogeRouter")
+	if err != nil {
+		fmt.Println(err)
 	}
 
+	err = frk.StopRouter("hogeRouter")
+	if err != nil {
+		fmt.Println(err)
+	}
 }
