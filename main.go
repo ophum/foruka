@@ -41,7 +41,7 @@ func main() {
 
 	err = frk.ConfigureRouterInterface("hogeRouter", core.RouterInterface{
 		Name:        "ens1",
-		Ipv4Address: net.ParseIP("192.168.10.1"),
+		Ipv4Address: net.ParseIP("192.168.10.254"),
 		Ipv4Prefix:  24,
 	})
 
@@ -50,14 +50,14 @@ func main() {
 			Iface:      "eth0",
 			Proto:      "tcp",
 			Dport:      80,
-			ToDestIP:   net.ParseIP("192.168.10.12"),
+			ToDestIP:   net.ParseIP("192.168.10.1"),
 			ToDestPort: 80,
 		},
 		core.RouterPortForwardTable{
 			Iface:      "eth0",
 			Proto:      "tcp",
-			Dport:      442,
-			ToDestIP:   net.ParseIP("192.168.10.12"),
+			Dport:      443,
+			ToDestIP:   net.ParseIP("192.168.10.1"),
 			ToDestPort: 80,
 		},
 	})
@@ -68,6 +68,52 @@ func main() {
 		OutIface:   "eth0",
 	})
 
+	err = frk.CreateContainer("t1", "router", map[string]string{
+		"eth0": "test_network",
+	}, map[string]string{
+		"cpu":    "2",
+		"memory": "64MB",
+	})
+
+	err = frk.StartContainer("t1")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.ExecContainer("t1", []string{
+		"ip", "a", "add", "192.168.10.1/24", "dev", "eth0",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.ExecContainer("t1", []string{
+		"ip", "route", "add", "default", "via", "192.168.10.254",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.CreateContainer("t2", "router", map[string]string{
+		"eth0": "test_network",
+	}, map[string]string{
+		"cpu":    "4",
+		"memory": "64MB",
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.StartContainer("t2")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.ExecContainer("t2", []string{
+		"ip", "a", "add", "192.168.10.2/24", "dev", "eth0",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.ExecContainer("t2", []string{
+		"ip", "route", "add", "default", "via", "192.168.10.254",
+	})
 	if err != nil {
 		fmt.Println(err)
 	}
