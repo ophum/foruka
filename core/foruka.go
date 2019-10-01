@@ -6,7 +6,7 @@ import (
 )
 
 type Foruka struct {
-	server	lxd.ContainerServer
+	server lxd.ContainerServer
 }
 
 func NewForuka(sockPath string) (*Foruka, error) {
