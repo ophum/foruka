@@ -1,56 +1,121 @@
 package main
 
 import (
-	_ "net/http"
+	"fmt"
+	"net"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
-	"github.com/gin-gonic/gin"
-
-	auth "github.com/ophum/foruka/controllers/authController"
-	cont "github.com/ophum/foruka/controllers/containerController"
-	home "github.com/ophum/foruka/controllers/homeController"
-	networks "github.com/ophum/foruka/controllers/networkController"
+	"github.com/ophum/foruka/core"
 )
 
 func main() {
-	r := gin.Default()
+	frk, err := core.NewForukaUnix("/var/snap/lxd/common/lxd/unix.socket")
+	//frk, err := core.NewForuka("https://10.55.37.84:8443")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
-	store := cookie.NewStore([]byte("secret"))
-	store.Options(sessions.Options{MaxAge: 86400})
+	//	err = frk.CreateRouterProfile("testtestprofile", map[string]string{
+	//		"eth0": "lxdbr0",
+	//		"eth1": "testtesttest",
+	//	})
+	//
 
-	r.Use(sessions.Sessions("session", store))
+	err = frk.CreateNetwork("test_network")
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	r.LoadHTMLGlob("views/templates/*/**")
-	r.Static("/assets", "./assets")
+	err = frk.CreateRouter("hogeRouter", map[string]string{
+		"eth0": "lxdbr0",
+		"ens1": "test_network",
+	})
 
-	r.GET("/", home.Index)
+	if err != nil {
+		fmt.Println(err)
+		//return
+	}
+	err = frk.StartRouter("hogeRouter")
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	r.GET("/register", auth.Create)
-	r.POST("/register", auth.Register)
+	err = frk.ConfigureRouterInterface("hogeRouter", core.RouterInterface{
+		Name:        "ens1",
+		Ipv4Address: net.ParseIP("192.168.10.254"),
+		Ipv4Prefix:  24,
+	})
 
-	r.GET("/login", auth.Index)
-	r.POST("/login", auth.Login)
+	err = frk.ConfigureRouterPortForwarding("hogeRouter", []core.RouterPortForwardTable{
+		core.RouterPortForwardTable{
+			Iface:      "eth0",
+			Proto:      "tcp",
+			Dport:      80,
+			ToDestIP:   net.ParseIP("192.168.10.1"),
+			ToDestPort: 80,
+		},
+		core.RouterPortForwardTable{
+			Iface:      "eth0",
+			Proto:      "tcp",
+			Dport:      443,
+			ToDestIP:   net.ParseIP("192.168.10.1"),
+			ToDestPort: 80,
+		},
+	})
 
-	r.GET("/verified", auth.Verified)
+	err = frk.ConfigureRouterNat(core.RouterNat{
+		RouterName: "hogeRouter",
+		SrcCidr:    "192.168.10.0/24",
+		OutIface:   "eth0",
+	})
 
-	r.GET("/logout", auth.Logout)
+	err = frk.CreateContainer("t1", "router", map[string]string{
+		"eth0": "test_network",
+	}, map[string]string{
+		"cpu":    "2",
+		"memory": "64MB",
+	})
 
-	containers := r.Group("/containers")
-	containers.GET("/", cont.Index)
-	containers.GET("/create", cont.Create)
-	containers.GET("/store", cont.Create)
-	containers.POST("/store", cont.Store)
-	containers.GET("/show/:id", cont.Show)
-	containers.GET("/stop/:id", cont.Stop)
-	containers.GET("/start/:id", cont.Start)
-	containers.GET("/delete/:id", cont.Delete)
+	err = frk.StartContainer("t1")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.ExecContainer("t1", []string{
+		"ip", "a", "add", "192.168.10.1/24", "dev", "eth0",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.ExecContainer("t1", []string{
+		"ip", "route", "add", "default", "via", "192.168.10.254",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.CreateContainer("t2", "router", map[string]string{
+		"eth0": "test_network",
+	}, map[string]string{
+		"cpu":    "4",
+		"memory": "64MB",
+	})
 
-	net := r.Group("/networks")
-	net.GET("/", networks.Index)
-	net.GET("/create", networks.Create)
-	net.GET("/store", networks.Create)
-	net.POST("/store", networks.Store)
-
-	r.Run()
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.StartContainer("t2")
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.ExecContainer("t2", []string{
+		"ip", "a", "add", "192.168.10.2/24", "dev", "eth0",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
+	err = frk.ExecContainer("t2", []string{
+		"ip", "route", "add", "default", "via", "192.168.10.254",
+	})
+	if err != nil {
+		fmt.Println(err)
+	}
 }
