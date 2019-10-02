@@ -8,7 +8,8 @@ import (
 )
 
 func main() {
-	frk, err := core.NewForuka("/var/snap/lxd/common/lxd/unix.socket")
+	frk, err := core.NewForukaUnix("/var/snap/lxd/common/lxd/unix.socket")
+	//frk, err := core.NewForuka("https://10.55.37.84:8443")
 	if err != nil {
 		fmt.Println(err)
 		return
