@@ -2,15 +2,17 @@ package core
 
 import (
 	lxd "github.com/lxc/lxd/client"
+	"github.com/ophum/foruka/datastore"
 	//"github.com/lxc/lxd/shared/api"
 )
 
 type Foruka struct {
 	server    lxd.ContainerServer
+	ds        *datastore.DataStore
 	IsCluster bool
 }
 
-func NewForukaUnix(sockPath string) (*Foruka, error) {
+func NewForukaUnix(sockPath, install_dir string) (*Foruka, error) {
 	s, err := lxd.ConnectLXDUnix(sockPath, nil)
 	if err != nil {
 		return nil, err
@@ -18,6 +20,7 @@ func NewForukaUnix(sockPath string) (*Foruka, error) {
 	f := &Foruka{
 		server:    s,
 		IsCluster: s.IsClustered(),
+		ds:        datastore.NewDataStore(install_dir),
 	}
 	return f, nil
 }
