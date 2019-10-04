@@ -21,6 +21,8 @@ func main() {
 	r := gin.Default()
 	containers := r.Group("/containers")
 	containers.GET("/", capi.List)
+	containers.GET("/names", capi.ListNames)
+	containers.GET("/show/:name", capi.Get)
 	containers.POST("/create", capi.Create)
 	r.Run()
 

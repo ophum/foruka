@@ -120,3 +120,13 @@ func (f *Foruka) ExecContainer(name string, command []string) error {
 func (f *Foruka) GetContainers() ([]api.Container, error) {
 	return f.server.GetContainers()
 }
+
+func (f *Foruka) GetContainerNames() ([]string, error) {
+	return f.server.GetContainerNames()
+}
+
+func (f *Foruka) GetContainer(name string) (*api.Container, string, error) {
+
+	container, etag, err := f.server.GetContainer(name)
+	return container, etag, err
+}

@@ -2,6 +2,7 @@ package container
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ophum/foruka/core"
@@ -41,4 +42,26 @@ func (a *ContainerAPI) Create(c *gin.Context) {
 
 	err := a.foruka.CreateContainer(name, alias, ifaces, limits)
 	c.JSON(200, err)
+}
+
+func (a *ContainerAPI) Get(c *gin.Context) {
+	name := c.Param("name")
+
+	fmt.Println("container name: ", name)
+	container, _, err := a.foruka.GetContainer(name)
+	if err != nil {
+		fmt.Println("error!!!")
+		c.JSON(200, err)
+	} else {
+		c.JSON(200, container)
+	}
+}
+
+func (a *ContainerAPI) ListNames(c *gin.Context) {
+	names, err := a.foruka.GetContainerNames()
+	if err != nil {
+		c.JSON(200, err)
+	} else {
+		c.JSON(200, names)
+	}
 }
