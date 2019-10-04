@@ -116,3 +116,7 @@ func (f *Foruka) ExecContainer(name string, command []string) error {
 	}
 	return nil
 }
+
+func (f *Foruka) GetContainers() ([]api.Container, error) {
+	return f.server.GetContainers()
+}
