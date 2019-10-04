@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 
+	"github.com/ophum/foruka/controller/network"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ophum/foruka/controller/container"
 	"github.com/ophum/foruka/core"
@@ -17,6 +19,7 @@ func main() {
 	}
 
 	capi := container.NewContainerAPI(frk)
+	napi := network.NewNetworkAPI(frk)
 
 	r := gin.Default()
 	containers := r.Group("/containers")
@@ -24,6 +27,12 @@ func main() {
 	containers.GET("/names", capi.ListNames)
 	containers.GET("/show/:name", capi.Get)
 	containers.POST("/create", capi.Create)
+
+	networks := r.Group("/networks")
+	networks.GET("/", napi.List)
+	networks.GET("/show/:name", napi.Get)
+	networks.POST("/create", napi.Create)
+	networks.POST("/delete", napi.Delete)
 	r.Run()
 
 	//	err = frk.CreateRouterProfile("testtestprofile", map[string]string{
