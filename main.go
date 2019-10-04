@@ -27,6 +27,9 @@ func main() {
 	containers.GET("/names", capi.ListNames)
 	containers.GET("/show/:name", capi.Get)
 	containers.POST("/create", capi.Create)
+	containers.POST("/start", capi.Start)
+	containers.POST("/stop", capi.Stop)
+	containers.POST("/set/ip", capi.SetIP)
 
 	networks := r.Group("/networks")
 	networks.GET("/", napi.List)

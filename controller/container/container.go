@@ -41,7 +41,16 @@ func (a *ContainerAPI) Create(c *gin.Context) {
 	_ = json.Unmarshal([]byte(limits_json), &limits)
 
 	err := a.foruka.CreateContainer(name, alias, ifaces, limits)
-	c.JSON(200, err)
+	if err != nil {
+		c.JSON(200, err)
+	} else {
+		container, _, err := a.foruka.GetContainer(name)
+		if err != nil {
+			c.JSON(200, err)
+		} else {
+			c.JSON(200, container)
+		}
+	}
 }
 
 func (a *ContainerAPI) Get(c *gin.Context) {
@@ -64,4 +73,54 @@ func (a *ContainerAPI) ListNames(c *gin.Context) {
 	} else {
 		c.JSON(200, names)
 	}
+}
+
+func (a *ContainerAPI) Start(c *gin.Context) {
+	name := c.PostForm("name")
+	err := a.foruka.StartContainer(name)
+	if err != nil {
+		c.JSON(200, err)
+	} else {
+		container, _, err := a.foruka.GetContainer(name)
+		if err != nil {
+			c.JSON(200, err)
+		} else {
+			c.JSON(200, map[string]string{
+				"status":      container.Status,
+				"status_code": fmt.Sprintf("%d", container.StatusCode),
+			})
+		}
+	}
+}
+
+func (a *ContainerAPI) Stop(c *gin.Context) {
+	name := c.PostForm("name")
+	err := a.foruka.StopContainer(name)
+	if err != nil {
+		c.JSON(200, err)
+	} else {
+		container, _, err := a.foruka.GetContainer(name)
+		if err != nil {
+			c.JSON(200, err)
+		} else {
+			c.JSON(200, map[string]string{
+				"status":      container.Status,
+				"status_code": fmt.Sprintf("%d", container.StatusCode),
+			})
+		}
+	}
+}
+
+func (a *ContainerAPI) SetIP(c *gin.Context) {
+	name := c.PostForm("name")
+	address := c.PostForm("ipv4.address")
+	prefix := c.PostForm("ipv4.prefix")
+	device := c.PostForm("device")
+
+	err := a.foruka.ExecContainer(
+		name,
+		[]string{"ip", "a", "add", fmt.Sprintf("%s/%s", address, prefix), "dev", device},
+	)
+
+	c.JSON(200, err)
 }
