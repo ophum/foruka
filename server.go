@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/ophum/foruka/datastore"
@@ -43,8 +44,43 @@ func ServeForuka(ctx *cli.Context) error {
 			c.JSON(200, "success")
 		}
 	})
-	r.POST("/create-router", func(c *gin.Context) {
+	r.GET("/create-router/:name/:netid", func(c *gin.Context) {
+		name := c.Param("name")
+		netid := c.Param("netid")
 
+		s := ds.Get(fmt.Sprintf("networks/bridge/%s", netid))
+		net := &core.Network{}
+		_ = json.Unmarshal([]byte(s), &net)
+
+		id, _ := fr.CreateRouter(name, map[string]string{
+			"eth0": ds.Get("external-bridge"),
+			"eth1": net.Name,
+		})
+
+		c.JSON(200, id)
+	})
+
+	r.GET("/routers", func(c *gin.Context) {
+		rts := fr.GetRouters()
+		c.JSON(200, rts)
+	})
+
+	r.GET("/routers/:id/status", func(c *gin.Context) {
+		status := fr.GetRouterStatus(c.Param("id"))
+		c.JSON(200, status)
+	})
+
+	r.GET("/routers/:id/start", func(c *gin.Context) {
+		id := c.Param("id")
+		fr.StartRouter(id)
+		status := fr.GetRouterStatus(id)
+		c.JSON(200, status)
+	})
+	r.GET("/routers/:id/stop", func(c *gin.Context) {
+		id := c.Param("id")
+		fr.StopRouter(id)
+		status := fr.GetRouterStatus(id)
+		c.JSON(200, status)
 	})
 	r.GET("/networks", func(c *gin.Context) {
 		nws := fr.GetNetworks()

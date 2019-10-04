@@ -58,6 +58,23 @@ func (f *Foruka) StopRouter(id string) error {
 	return f.StopContainer(r.Cid)
 }
 
+func (f *Foruka) GetRouter(id string) Router {
+	s := f.ds.Get(fmt.Sprintf("router/%s", id))
+	r := Router{}
+	_ = json.Unmarshal([]byte(s), &r)
+	return r
+}
+
+func (f *Foruka) GetRouters() map[string]Router {
+	rts := f.ds.Gets("router/%")
+	rs := map[string]Router{}
+	for _, v := range rts {
+		r := &Router{}
+		_ = json.Unmarshal([]byte(v), r)
+		rs[r.Id] = *r
+	}
+	return rs
+}
 func (f *Foruka) GetRouterStatus(id string) string {
 	s := f.ds.Get(fmt.Sprintf("router/%s", id))
 	r := &Router{}
