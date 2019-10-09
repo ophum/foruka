@@ -26,6 +26,7 @@ func main() {
 	containers.GET("/", capi.List)
 	containers.GET("/names", capi.ListNames)
 	containers.GET("/show/:name", capi.Get)
+	containers.GET("/state/:name", capi.GetState)
 	containers.POST("/create", capi.Create)
 	containers.POST("/start", capi.Start)
 	containers.POST("/stop", capi.Stop)

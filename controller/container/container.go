@@ -124,3 +124,14 @@ func (a *ContainerAPI) SetIP(c *gin.Context) {
 
 	c.JSON(200, err)
 }
+
+func (a *ContainerAPI) GetState(c *gin.Context) {
+	name := c.Param("name")
+
+	state, err := a.foruka.GetContainerState(name)
+	if err != nil {
+		c.JSON(200, err)
+	} else {
+		c.JSON(200, state)
+	}
+}

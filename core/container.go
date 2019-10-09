@@ -130,3 +130,8 @@ func (f *Foruka) GetContainer(name string) (*api.Container, string, error) {
 	container, etag, err := f.server.GetContainer(name)
 	return container, etag, err
 }
+
+func (f *Foruka) GetContainerState(name string) (*api.ContainerState, error) {
+	state, _, err := f.server.GetContainerState(name)
+	return state, err
+}
