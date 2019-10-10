@@ -1,8 +1,6 @@
 package network
 
 import (
-	"encoding/json"
-
 	"github.com/gin-gonic/gin"
 	"github.com/ophum/foruka/core"
 )
@@ -38,12 +36,23 @@ func (a *NetworkAPI) Get(c *gin.Context) {
 	}
 }
 
-func (a *NetworkAPI) Create(c *gin.Context) {
-	name := c.PostForm("name")
-	config_json := c.PostForm("config")
+type NetworkConfig struct {
+	Ipv4Address string `json:"ipv4.address"`
+	Ipv6Address string `json:"ipv4.address"`
+}
+type NetworkCreateRequest struct {
+	Name   string        `json:"name"`
+	Config NetworkConfig `json:"config"`
+}
 
-	config := map[string]string{}
-	_ = json.Unmarshal([]byte(config_json), &config)
+func (a *NetworkAPI) Create(c *gin.Context) {
+	ncr := NetworkCreateRequest{}
+	c.BindJSON(&ncr)
+	name := ncr.Name
+	config := map[string]string{
+		"ipv4.address": ncr.Config.Ipv4Address,
+		"ipv6.address": ncr.Config.Ipv6Address,
+	}
 	err := a.foruka.CreateNetwork(name, config)
 	if err != nil {
 		c.JSON(200, err)
