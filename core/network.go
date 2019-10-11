@@ -6,7 +6,7 @@ import (
 	"github.com/lxc/lxd/shared/api"
 )
 
-func (f *Foruka) CreateNetwork(name string) error {
+func (f *Foruka) CreateNetwork(name string, config map[string]string) error {
 
 	if name == "" {
 		return fmt.Errorf("Error: Invalid Arguments, Empty `name`\n")
@@ -14,12 +14,7 @@ func (f *Foruka) CreateNetwork(name string) error {
 
 	req := api.NetworksPost{
 		NetworkPut: api.NetworkPut{
-			Config: map[string]string{
-				"ipv4.address": "none",
-				"ipv4.nat":     "false",
-				"ipv6.address": "none",
-				"ipv6.nat":     "false",
-			},
+			Config: config,
 		},
 		Name: name,
 	}
@@ -37,4 +32,14 @@ func (f *Foruka) DeleteNetwork(name string) error {
 	}
 	err := f.server.DeleteNetwork(name)
 	return err
+}
+
+func (f *Foruka) GetNetworks() ([]api.Network, error) {
+	networks, err := f.server.GetNetworks()
+	return networks, err
+}
+
+func (f *Foruka) GetNetwork(name string) (*api.Network, string, error) {
+	network, etag, err := f.server.GetNetwork(name)
+	return network, etag, err
 }
