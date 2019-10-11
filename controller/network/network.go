@@ -38,7 +38,7 @@ func (a *NetworkAPI) Get(c *gin.Context) {
 
 type NetworkConfig struct {
 	Ipv4Address string `json:"ipv4.address"`
-	Ipv6Address string `json:"ipv4.address"`
+	Ipv6Address string `json:"ipv6.address"`
 }
 type NetworkCreateRequest struct {
 	Name   string        `json:"name"`
