@@ -82,8 +82,14 @@ func (a *ContainerAPI) ListNames(c *gin.Context) {
 	}
 }
 
+type ContainerStateUpdateRequest struct {
+	Name string `json:"name"`
+}
+
 func (a *ContainerAPI) Start(c *gin.Context) {
-	name := c.PostForm("name")
+	csur := ContainerStateUpdateRequest{}
+	c.BindJSON(&csur)
+	name := csur.Name
 	err := a.foruka.StartContainer(name)
 	if err != nil {
 		c.JSON(200, err)
@@ -101,7 +107,9 @@ func (a *ContainerAPI) Start(c *gin.Context) {
 }
 
 func (a *ContainerAPI) Stop(c *gin.Context) {
-	name := c.PostForm("name")
+	csur := ContainerStateUpdateRequest{}
+	c.BindJSON(&csur)
+	name := csur.Name
 	err := a.foruka.StopContainer(name)
 	if err != nil {
 		c.JSON(200, err)
