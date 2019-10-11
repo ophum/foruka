@@ -1,7 +1,6 @@
 package container
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -28,17 +27,25 @@ func (a *ContainerAPI) List(c *gin.Context) {
 	}
 
 }
+
+type ContainerIface map[string]string
+type ContainerLimit map[string]string
+
+type ContainerCreateRequest struct {
+	Name   string         `json:"name"`
+	Alias  string         `json:"alias"`
+	Ifaces ContainerIface `json:"ifaces"`
+	Limits ContainerLimit `json:"limits"`
+}
+
 func (a *ContainerAPI) Create(c *gin.Context) {
-	name := c.PostForm("name")
-	alias := c.PostForm("alias")
-	ifaces_json := c.PostForm("ifaces")
-	limits_json := c.PostForm("limits")
+	ccr := ContainerCreateRequest{}
+	c.BindJSON(&ccr)
 
-	ifaces := map[string]string{}
-	_ = json.Unmarshal([]byte(ifaces_json), &ifaces)
-
-	limits := map[string]string{}
-	_ = json.Unmarshal([]byte(limits_json), &limits)
+	name := ccr.Name
+	alias := ccr.Alias
+	ifaces := ccr.Ifaces
+	limits := ccr.Limits
 
 	err := a.foruka.CreateContainer(name, alias, ifaces, limits)
 	if err != nil {
