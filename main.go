@@ -31,6 +31,7 @@ func main() {
 	containers.POST("/start", capi.Start)
 	containers.POST("/stop", capi.Stop)
 	containers.POST("/set/ip", capi.SetIP)
+	containers.POST("/config/default_gateway", capi.ConfigDefaultGateway)
 
 	networks := r.Group("/networks")
 	networks.GET("/", napi.List)

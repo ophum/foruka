@@ -163,3 +163,22 @@ func (a *ContainerAPI) GetState(c *gin.Context) {
 		c.JSON(200, state)
 	}
 }
+
+type ContainerConfigDefaultGatewayRequest struct {
+	Name    string `json:"name"`
+	Gateway string `json:"gateway"`
+}
+
+func (a *ContainerAPI) ConfigDefaultGateway(c *gin.Context) {
+	dgr := ContainerConfigDefaultGatewayRequest{}
+	c.BindJSON(&dgr)
+
+	err := a.foruka.ExecContainer(
+		dgr.Name,
+		[]string{
+			"ip", "route", "add", "default", "via", dgr.Gateway,
+		},
+	)
+
+	c.JSON(200, err)
+}
