@@ -61,10 +61,15 @@ func (a *NetworkAPI) Create(c *gin.Context) {
 	}
 }
 
-func (a *NetworkAPI) Delete(c *gin.Context) {
-	name := c.PostForm("name")
+type NetworkDeleteRequest struct {
+	Name string `json:"name"`
+}
 
-	err := a.foruka.DeleteNetwork(name)
+func (a *NetworkAPI) Delete(c *gin.Context) {
+	ndr := NetworkDeleteRequest{}
+	c.bindJSON(&ndr)
+
+	err := a.foruka.DeleteNetwork(ndr.Name)
 	if err != nil {
 		c.JSON(200, err)
 	} else {
