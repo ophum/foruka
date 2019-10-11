@@ -126,11 +126,24 @@ func (a *ContainerAPI) Stop(c *gin.Context) {
 	}
 }
 
+type ContainerIpv4 struct {
+	Address string `json:"address"`
+	Prefix  string `json:"prefix"`
+}
+
+type ContainerSetIPRequest struct {
+	Name   string        `json:"name"`
+	Ipv4   ContainerIpv4 `json:"ipv4"`
+	Device string        `json:"device"`
+}
+
 func (a *ContainerAPI) SetIP(c *gin.Context) {
-	name := c.PostForm("name")
-	address := c.PostForm("ipv4.address")
-	prefix := c.PostForm("ipv4.prefix")
-	device := c.PostForm("device")
+	csir := ContainerSetIPRequest{}
+	c.BindJSON(&csir)
+	name := csir.Name
+	address := csir.Ipv4.Address
+	prefix := csir.Ipv4.Prefix
+	device := csir.Device
 
 	err := a.foruka.ExecContainer(
 		name,
