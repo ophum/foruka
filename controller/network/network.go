@@ -67,7 +67,7 @@ type NetworkDeleteRequest struct {
 
 func (a *NetworkAPI) Delete(c *gin.Context) {
 	ndr := NetworkDeleteRequest{}
-	c.bindJSON(&ndr)
+	c.BindJSON(&ndr)
 
 	err := a.foruka.DeleteNetwork(ndr.Name)
 	if err != nil {
