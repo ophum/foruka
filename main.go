@@ -38,6 +38,7 @@ func main() {
 	networks.POST("/create", napi.Create)
 	networks.POST("/delete", napi.Delete)
 	networks.POST("/config/proxy", napi.ConfigProxy)
+	networks.POST("/config/masquerade", napi.ConfigMasquerade)
 	r.Run()
 
 	//	err = frk.CreateRouterProfile("testtestprofile", map[string]string{

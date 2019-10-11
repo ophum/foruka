@@ -110,3 +110,23 @@ func (a *NetworkAPI) ConfigProxy(c *gin.Context) {
 
 	c.JSON(200, err)
 }
+
+type NetworkConfigMasqueradeRequest struct {
+	RouterName string `json:"router_name"`
+}
+
+func (a *NetworkAPI) ConfigMasquerade(c *gin.Context) {
+	cmr := NetworkConfigMasqueradeRequest{}
+	c.BindJSON(&cmr)
+
+	err := a.foruka.ExecContainer(
+		cmr.RouterName,
+		[]string{
+			"iptables", "-t", "nat",
+			"-A", "POSTROUTING",
+			"-j", "MASQUERADE",
+		},
+	)
+
+	c.JSON(200, err)
+}
