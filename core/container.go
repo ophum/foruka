@@ -92,6 +92,10 @@ func (f *Foruka) updateContainerState(name, action string) error {
 	return nil
 }
 
+func (f *Foruka) RawExecContainer(name string, post api.ContainerExecPost, args *lxd.ContainerExecArgs) (lxd.Operation, error) {
+	return f.server.ExecContainer(name, post, args)
+}
+
 func (f *Foruka) ExecContainer(name string, command []string) error {
 	req := api.ContainerExecPost{
 		Command:     command,

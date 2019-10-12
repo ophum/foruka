@@ -32,6 +32,8 @@ func main() {
 	containers.POST("/stop", capi.Stop)
 	containers.POST("/set/ip", capi.SetIP)
 	containers.POST("/config/default_gateway", capi.ConfigDefaultGateway)
+	containers.POST("/config/ssh_authorized_key", capi.ConfigSshAuthorizedKey)
+	containers.POST("/exec", capi.ExecCommand)
 
 	networks := r.Group("/networks")
 	networks.GET("/", napi.List)
