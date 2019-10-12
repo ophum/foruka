@@ -1,6 +1,8 @@
 package network
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/ophum/foruka/core"
 )
@@ -75,4 +77,56 @@ func (a *NetworkAPI) Delete(c *gin.Context) {
 	} else {
 		c.JSON(200, "success")
 	}
+}
+
+type NetworkConfigProxyRequest struct {
+	RouterName         string `json:"router_name"`
+	EndpointPort       string `json:"endpoint_port"`
+	DestinationPort    string `json:"destination_port"`
+	DestinationAddress string `json:"destination_address"`
+}
+
+func (a *NetworkAPI) ConfigProxy(c *gin.Context) {
+	ncp := NetworkConfigProxyRequest{}
+	c.BindJSON(&ncp)
+
+	router_name := ncp.RouterName
+	endpoint_port := ncp.EndpointPort
+	dport := ncp.DestinationPort
+	daddr := ncp.DestinationAddress
+
+	err := a.foruka.ExecContainer(
+		router_name,
+		[]string{
+			"iptables", "-t", "nat",
+			"-A", "PREROUTING",
+			"-i", "eth0",
+			"-p", "tcp",
+			"--dport", endpoint_port,
+			"-j", "DNAT",
+			"--to-destination", fmt.Sprintf("%s:%s", daddr, dport),
+		},
+	)
+
+	c.JSON(200, err)
+}
+
+type NetworkConfigMasqueradeRequest struct {
+	RouterName string `json:"router_name"`
+}
+
+func (a *NetworkAPI) ConfigMasquerade(c *gin.Context) {
+	cmr := NetworkConfigMasqueradeRequest{}
+	c.BindJSON(&cmr)
+
+	err := a.foruka.ExecContainer(
+		cmr.RouterName,
+		[]string{
+			"iptables", "-t", "nat",
+			"-A", "POSTROUTING",
+			"-j", "MASQUERADE",
+		},
+	)
+
+	c.JSON(200, err)
 }

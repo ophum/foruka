@@ -163,3 +163,83 @@ func (a *ContainerAPI) GetState(c *gin.Context) {
 		c.JSON(200, state)
 	}
 }
+
+type ContainerConfigDefaultGatewayRequest struct {
+	Name    string `json:"name"`
+	Gateway string `json:"gateway"`
+}
+
+func (a *ContainerAPI) ConfigDefaultGateway(c *gin.Context) {
+	dgr := ContainerConfigDefaultGatewayRequest{}
+	c.BindJSON(&dgr)
+
+	err := a.foruka.ExecContainer(
+		dgr.Name,
+		[]string{
+			"ip", "route", "add", "default", "via", dgr.Gateway,
+		},
+	)
+
+	c.JSON(200, err)
+}
+
+type ContainerConfigSshAuthorizedKeyRequest struct {
+	Name             string `json:"name"`
+	SshAuthorizedKey string `json:"ssh_authorized_key"`
+}
+
+func (a *ContainerAPI) ConfigSshAuthorizedKey(c *gin.Context) {
+	req := ContainerConfigSshAuthorizedKeyRequest{}
+	c.BindJSON(&req)
+
+	name := req.Name
+	ssh_key := req.SshAuthorizedKey
+
+	commands := [][]string{
+		[]string{
+			"mkdir", "-p", "/home/alpine/.ssh",
+		},
+		[]string{
+			"bash", "-c", fmt.Sprintf("echo \"%s\" > /home/alpine/.ssh/authorized_keys", ssh_key),
+		},
+		[]string{
+			"chown", "-R", "alpine.alpine", "/home/alpine/.ssh",
+		},
+		[]string{
+			"chmod", "700", "/home/alpine/.ssh",
+		},
+		[]string{
+			"chmod", "600", "/home/alpine/.ssh/authorized_keys",
+		},
+	}
+
+	for _, cmd := range commands {
+		a.foruka.ExecContainer(
+			name,
+			cmd,
+		)
+	}
+
+	c.JSON(200, "")
+}
+
+type ContainerExecCommandRequest struct {
+	Name    string   `json:"name"`
+	Command []string `json:"command"`
+}
+
+func (a *ContainerAPI) ExecCommand(c *gin.Context) {
+	cr := ContainerExecCommandRequest{}
+	c.BindJSON(&cr)
+
+	name := cr.Name
+	command := cr.Command
+
+	err := a.foruka.ExecContainer(name, command)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
+
+	c.JSON(200, "")
+}

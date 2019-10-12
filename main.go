@@ -31,12 +31,17 @@ func main() {
 	containers.POST("/start", capi.Start)
 	containers.POST("/stop", capi.Stop)
 	containers.POST("/set/ip", capi.SetIP)
+	containers.POST("/config/default_gateway", capi.ConfigDefaultGateway)
+	containers.POST("/config/ssh_authorized_key", capi.ConfigSshAuthorizedKey)
+	containers.POST("/exec", capi.ExecCommand)
 
 	networks := r.Group("/networks")
 	networks.GET("/", napi.List)
 	networks.GET("/show/:name", napi.Get)
 	networks.POST("/create", napi.Create)
 	networks.POST("/delete", napi.Delete)
+	networks.POST("/config/proxy", napi.ConfigProxy)
+	networks.POST("/config/masquerade", napi.ConfigMasquerade)
 	r.Run()
 
 	//	err = frk.CreateRouterProfile("testtestprofile", map[string]string{
