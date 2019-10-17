@@ -2,6 +2,7 @@ package network
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ophum/foruka/core"
@@ -107,7 +108,24 @@ func (a *NetworkAPI) ConfigProxy(c *gin.Context) {
 			"--to-destination", fmt.Sprintf("%s:%s", daddr, dport),
 		},
 	)
+	if err != nil {
+		c.JSON(500, err)
+		return
+	}
 
+	state, _ := a.foruka.GetContainerState(router_name)
+	rt_net := state.Network["eth0"].Addresses
+	rt_ip := ""
+	for _, v := range rt_net {
+		if v.Family == "inet" {
+			rt_ip = v.Address
+		}
+	}
+	if rt_ip != "" {
+		a.foruka.AddProxyRule(endpoint_port, rt_ip)
+	} else {
+		log.Println("Error Not found", rt_net)
+	}
 	c.JSON(200, err)
 }
 
@@ -129,4 +147,8 @@ func (a *NetworkAPI) ConfigMasquerade(c *gin.Context) {
 	)
 
 	c.JSON(200, err)
+}
+
+func (a *NetworkAPI) GetExternalIP(c *gin.Context) {
+	c.JSON(200, a.foruka.GetExternalIP())
 }

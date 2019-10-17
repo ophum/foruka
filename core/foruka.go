@@ -1,23 +1,50 @@
 package core
 
 import (
+	"net"
+
 	lxd "github.com/lxc/lxd/client"
 	//"github.com/lxc/lxd/shared/api"
 )
 
 type Foruka struct {
-	server    lxd.ContainerServer
-	IsCluster bool
+	server            lxd.ContainerServer
+	externalInterface string
+	externalIP        string
+	IsCluster         bool
 }
 
-func NewForukaUnix(sockPath string) (*Foruka, error) {
+func (f *Foruka) GetExternalIP() string {
+	return f.externalIP
+}
+func getInternalIP(iface string) string {
+	itf, _ := net.InterfaceByName(iface)
+	item, _ := itf.Addrs()
+	var ip net.IP
+	for _, addr := range item {
+		switch v := addr.(type) {
+		case *net.IPNet:
+			if !v.IP.IsLoopback() && v.IP.To4() != nil {
+				ip = v.IP
+			}
+		}
+	}
+	if ip != nil {
+		return ip.String()
+	}
+	return ""
+}
+func NewForukaUnix(externalInterface, sockPath string) (*Foruka, error) {
 	s, err := lxd.ConnectLXDUnix(sockPath, nil)
 	if err != nil {
 		return nil, err
 	}
+
 	f := &Foruka{
-		server:    s,
-		IsCluster: s.IsClustered(),
+		server:            s,
+		externalInterface: externalInterface,
+		externalIP:        getInternalIP(externalInterface),
+		IsCluster:         s.IsClustered(),
 	}
 	return f, nil
 }
